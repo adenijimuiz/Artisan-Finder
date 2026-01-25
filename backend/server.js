@@ -6,6 +6,9 @@ import helmet from 'helmet';
 import http from 'http';
 import { Server as socketIO } from 'socket.io';
 import connectDB from './config/connectDB.js'
+import connectCloudinary from './config/cloudinary.js';
+import { errorHandler } from './middleware/errorHandler.js';
+
 
 
 
@@ -36,6 +39,9 @@ const io = new socketIO(server, {
 // Connect to MongoDB
 connectDB();
 
+//connect to cloudinary
+connectCloudinary()
+
 // Middleware
 app.use(helmet());
 app.use(morgan('dev'));
@@ -64,7 +70,7 @@ app.get('/health', (req, res) => {
 });
 
 // Error handler
-// app.use(errorHandler);
+app.use(errorHandler)
 
 // Socket.IO connection handling
 const activeUsers = new Map();

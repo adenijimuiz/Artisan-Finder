@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import http from 'http';
 import { Server as socketIO } from 'socket.io';
+import connectDB from './config/connectDB.js'
+
 
 
 // const connectDB = require('./config/database');
@@ -32,7 +34,7 @@ const io = new socketIO(server, {
 });
 
 // Connect to MongoDB
-// connectDB();
+connectDB();
 
 // Middleware
 app.use(helmet());

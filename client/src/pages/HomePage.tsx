@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { useApp } from '@/context/AppContext';
 
 const categories = [
   { name: 'Carpentry', icon: '🔨', count: 245 },
@@ -21,6 +22,9 @@ const steps = [
 ];
 
 export const HomePage = () => {
+
+  const {currentUser} = useApp()
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -42,11 +46,24 @@ export const HomePage = () => {
             </div>
 
             <div className="mt-6 flex justify-center gap-4">
-              <Link to="/register/client">
-                <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-gray-100">
-                  Find an Artisan
-                </Button>
-              </Link>
+
+              {
+                currentUser ? 
+                
+                <Link to="/search">
+                  <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-gray-100">
+                    Find an Artisan
+                  </Button>
+                </Link>
+                
+                :
+                <Link to="/register/client">
+                  <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-gray-100">
+                    Find an Artisan
+                  </Button>
+                </Link>
+              }
+              
               <Link to="/register/artisan">
                 <Button size="lg" variant="outline" className="bg-blue-700 text-white hover:bg-blue-600 border-white">
                   Register as Artisan

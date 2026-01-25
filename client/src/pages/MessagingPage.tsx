@@ -3,7 +3,8 @@ import { useApp } from '@/context/AppContext';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, Paperclip } from 'lucide-react';
+import { Send, Paperclip, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const MessagingPage = () => {
   const { currentUser, messages, users, addMessage } = useApp();
@@ -46,13 +47,20 @@ export const MessagingPage = () => {
     addMessage(message);
     setNewMessage('');
   };
-
+  const navigate = useNavigate()
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl mb-8">Messages</h1>
+        <div className='flex justify-between items-start'>
+          <h1 className="text-3xl mb-8">Messages</h1>
+          
+          <div className='flex gap-1' onClick={() => navigate(-1)}>
+            <ArrowLeft></ArrowLeft>
+            <span>Back</span>
+          </div>
+        </div>
 
-        <Card className="h-[600px] flex">
+        <Card className="min-h-150 flex">
           {/* Conversations List */}
           <div className="w-80 border-r">
             <div className="p-4 border-b">

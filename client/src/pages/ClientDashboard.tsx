@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, Calendar, Star, CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const ClientDashboard = () => {
   const { currentUser, bookings, users, getFavoriteArtisans } = useApp();
@@ -15,9 +16,18 @@ export const ClientDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl mb-2">Welcome back, {currentUser?.name}!</h1>
-          <p className="text-gray-600">Manage your bookings and requests</p>
+        <div className="mb-8 flex justify-between">
+
+          <div>
+            <h1 className="text-3xl mb-2">Welcome back, {currentUser?.name}!</h1>
+            <p className="text-gray-600">Manage your bookings and requests</p>
+          </div>
+          
+
+          <div className="flex md:hidden items-center gap-6">
+              <Link to="/search" className="hover:text-blue-600">Find Artisans</Link>
+              <Link to="/messages" className="hover:text-blue-600">Messages</Link>
+            </div>
         </div>
 
         {/* Stats */}

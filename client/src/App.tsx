@@ -15,6 +15,7 @@ import { AdminDashboard } from '@/pages/AdminDashboard';
 import { LogOut } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AdminLoginPage } from '@/pages/AdminLoginPage';
+import NotFound from '@/pages/NotFound';
 
 
 
@@ -48,7 +49,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="text-2xl text-blue-600">
-              ArtisanConnect
+              ArtisanFinder
             </Link>
 
             <div className="hidden md:flex items-center gap-6">
@@ -105,7 +106,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl mb-4">ArtisanConnect</h3>
+              <h3 className="text-xl mb-4">ArtisanFinder</h3>
               <p className="text-gray-400">Connecting skilled artisans with clients</p>
             </div>
             <div>
@@ -134,7 +135,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            © 2026 ArtisanConnect. All rights reserved.
+            © 2026 ArtisanFinder. All rights reserved.
           </div>
         </div>
       </footer>
@@ -146,7 +147,7 @@ const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode;
   const { currentUser } = useApp();
 
     /// uncomment to enter as an admin
-  //   const adminUser = {
+    // const adminUser = {
   //     id: '1',
   // name: 'ola',
   // email: 'sad',
@@ -173,7 +174,7 @@ const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode;
   //   return <Navigate to={`/dashboard/${adminUser.role}`} />;
   // }
 
-    if (!currentUser) {
+  if (!currentUser) {
     return <Navigate to="/register/client" />;
   }
 
@@ -229,6 +230,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
     </Router>

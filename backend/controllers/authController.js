@@ -1,0 +1,162 @@
+import jwt from 'jsonwebtoken';
+import { geocodeAddress } from '../utils/geocoding';
+import User from '../models/User';
+// const User = require('../models/User');
+// const { geocodeAddress } = require('../utils/geocoding');
+
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE
+  });
+};
+
+
+// Register a new client
+exports.register = async (req, res) => {
+  try {
+    const { name, email, password, location } = req.body;
+
+    // Geocode location if provided
+    let locationData = {};
+    if (location) {
+      const coords = await geocodeAddress(location);
+      if (coords) {
+        locationData = {
+          address: location,
+          coordinates: {
+            type: 'Point',
+            coordinates: [coords.lng, coords.lat]
+          }
+        };
+      }
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      location: locationData
+    });
+
+    const token = signToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        verified: user.verified
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Register an Artisan
+exports.registerArtisan = async (req, res) => {
+  try {
+    const { name, email, password, location, skills, experience, priceRange, availability, portfolio } = req.body;
+
+    // Geocode location if provided
+    let locationData = {};
+    if (location) {
+      const coords = await geocodeAddress(location);
+      if (coords) {
+        locationData = {
+          address: location,
+          coordinates: {
+            type: 'Point',
+            coordinates: [coords.lng, coords.lat]
+          }
+        };
+      }
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      location: locationData,
+      role: 'artisan',
+      skills,
+      experience,
+      priceRange,
+      availability,
+      portfolio
+    });
+
+    const token = signToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        verified: user.verified
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = signToken(user._id);
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        bio: user.bio,
+        phone: user.phone,
+        skills: user.skills,
+        experience: user.experience,
+        location: user.location?.address,
+        rating: user.rating,
+        reviewCount: user.reviewCount,
+        priceRange: user.priceRange,
+        availability: user.availability,
+        portfolio: user.portfolio,
+        verified: user.verified
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

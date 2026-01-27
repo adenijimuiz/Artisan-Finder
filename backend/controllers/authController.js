@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { geocodeAddress } from '../utils/geocoding';
 import User from '../models/User';
-// const User = require('../models/User');
-// const { geocodeAddress } = require('../utils/geocoding');
+
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -12,7 +11,7 @@ const signToken = (id) => {
 
 
 // Register a new client
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { name, email, password, location } = req.body;
 
@@ -58,9 +57,9 @@ exports.register = async (req, res) => {
 };
 
 // Register an Artisan
-exports.registerArtisan = async (req, res) => {
+export const registerArtisan = async (req, res) => {
   try {
-    const { name, email, password, location, skills, experience, priceRange, availability, portfolio } = req.body;
+    const { name, email, password, location, bio, skills, experience, priceRange, availability, portfolio } = req.body;
 
     // Geocode location if provided
     let locationData = {};
@@ -83,6 +82,7 @@ exports.registerArtisan = async (req, res) => {
       password,
       location: locationData,
       role: 'artisan',
+      bio,
       skills,
       experience,
       priceRange,
@@ -109,7 +109,7 @@ exports.registerArtisan = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -152,7 +152,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getMe = async (req, res) => {
+export const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     res.json({ success: true, user });

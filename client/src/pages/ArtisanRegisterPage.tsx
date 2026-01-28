@@ -21,7 +21,7 @@ export const ArtisanRegisterPage = () => {
     bio: '',
     skills: '',
     experience: '',
-    location: '',
+    // location: '',
     priceRange: ''
   });
 
@@ -128,7 +128,7 @@ export const ArtisanRegisterPage = () => {
                       onChange={e => setFormData({...formData, bio: e.target.value})}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <Label htmlFor="location">Service Location *</Label>
                     <Input
                       id="location"
@@ -137,7 +137,7 @@ export const ArtisanRegisterPage = () => {
                       value={formData.location}
                       onChange={e => setFormData({...formData, location: e.target.value})}
                     />
-                  </div>
+                  </div> */}
                   <div>
                     <Label htmlFor="priceRange">Price Range (per hour) *</Label>
                     <Input

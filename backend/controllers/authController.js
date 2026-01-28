@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { geocodeAddress } from '../utils/geocoding';
-import User from '../models/User';
+import { geocodeAddress } from '../utils/geocoding.js';
+import User from '../models/User.js';
 
 
 const signToken = (id) => {
@@ -13,28 +13,30 @@ const signToken = (id) => {
 // Register a new client
 export const register = async (req, res) => {
   try {
-    const { name, email, password, location } = req.body;
+    const { name, email, password} = req.body;
+
+    //will be removing location for now
 
     // Geocode location if provided
-    let locationData = {};
-    if (location) {
-      const coords = await geocodeAddress(location);
-      if (coords) {
-        locationData = {
-          address: location,
-          coordinates: {
-            type: 'Point',
-            coordinates: [coords.lng, coords.lat]
-          }
-        };
-      }
-    }
+    // let locationData = {};
+    // if (location) {
+    //   const coords = await geocodeAddress(location);
+    //   if (coords) {
+    //     locationData = {
+    //       address: location,
+    //       coordinates: {
+    //         type: 'Point',
+    //         coordinates: [coords.lng, coords.lat]
+    //       }
+    //     };
+    //   }
+    // }
 
     const user = await User.create({
       name,
       email,
       password,
-      location: locationData
+      verified: true
     });
 
     const token = signToken(user._id);
@@ -47,7 +49,6 @@ export const register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        avatar: user.avatar,
         verified: user.verified
       }
     });
@@ -59,22 +60,23 @@ export const register = async (req, res) => {
 // Register an Artisan
 export const registerArtisan = async (req, res) => {
   try {
-    const { name, email, password, location, bio, skills, experience, priceRange, availability, portfolio } = req.body;
+    const { name, email, password, bio, skills, experience, priceRange, portfolio } = req.body;
 
     // Geocode location if provided
-    let locationData = {};
-    if (location) {
-      const coords = await geocodeAddress(location);
-      if (coords) {
-        locationData = {
-          address: location,
-          coordinates: {
-            type: 'Point',
-            coordinates: [coords.lng, coords.lat]
-          }
-        };
-      }
-    }
+    // let locationData = {};
+    // if (location) {
+    //   const coords = await geocodeAddress(location);
+    //   if (coords) {
+    //     locationData = {
+    //       address: location,
+    //       coordinates: {
+    //         type: 'Point',
+    //         coordinates: [coords.lng, coords.lat]
+    //       }
+    //     };
+    //   }
+    // }
+    
 
     const user = await User.create({
       name,
@@ -86,7 +88,6 @@ export const registerArtisan = async (req, res) => {
       skills,
       experience,
       priceRange,
-      availability,
       portfolio
     });
 

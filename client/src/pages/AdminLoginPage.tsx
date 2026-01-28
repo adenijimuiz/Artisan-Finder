@@ -15,7 +15,7 @@ export const AdminLoginPage = () => {
     email: '',
     password: '',
     phone: '',
-    location: ''
+    // location: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {

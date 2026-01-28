@@ -31,7 +31,10 @@ const userSchema = new mongoose.Schema({
   // Artisan specific fields
   avatar: String,
   bio: String,
-  skills: [String],
+  skills: {
+    type: Array,
+    default: []
+  },
   experience: String,
   priceRange: String,
   availability: {
@@ -39,7 +42,10 @@ const userSchema = new mongoose.Schema({
     enum: ['Available', 'Busy', 'Offline'],
     default: 'Available'
   },
-  portfolio: [String],
+  portfolio: {
+    type: Array,
+    default: []
+  },
   verified: {
     type: Boolean,
     default: false
@@ -56,23 +62,24 @@ const userSchema = new mongoose.Schema({
   },
   
   // Location
-  location: {
-    address: String,
-    city: String,
-    state: String,
-    country: String,
-    coordinates: {
-      type: { type: String, default: 'Point' },
-      coordinates: [Number] // [longitude, latitude]
-    }
-  },
+  // location: {
+  //   address: String,
+  //   city: String,
+  //   state: String,
+  //   country: String,
+  //   coordinates: {
+  //     type: { type: String, default: 'Point' },
+  //     coordinates: [Number] // [longitude, latitude]
+  //   },
+  //   default: {}
+  // },
   
   // Verification documents
-  documents: [{
-    type: String,
-    url: String,
-    uploadedAt: Date
-  }],
+  // documents: [{
+  //   type: String,
+  //   url: String,
+  //   uploadedAt: Date
+  // }],
   
   createdAt: {
     type: Date,
@@ -86,10 +93,10 @@ const userSchema = new mongoose.Schema({
 userSchema.index({ 'location.coordinates': '2dsphere' });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+
   this.password = await bcrypt.hash(this.password, 12);
-  next();
 });
 
 // Compare password method

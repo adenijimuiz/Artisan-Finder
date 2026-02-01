@@ -81,7 +81,7 @@ export const useApp = () => {
 const mockArtisans: User[] = [
   {
     id: '1',
-    name: 'John Carpenter',
+    name: 'muiz Carpenter',
     email: 'john@carpenter.com',
     role: 'artisan',
     phone: '+1 234-567-8901',
@@ -99,7 +99,7 @@ const mockArtisans: User[] = [
   },
   {
     id: '2',
-    name: 'Sarah Plumber',
+    name: 'Ade Plumber',
     email: 'sarah@plumbing.com',
     role: 'artisan',
     phone: '+1 234-567-8902',

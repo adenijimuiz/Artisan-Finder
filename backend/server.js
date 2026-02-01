@@ -9,6 +9,7 @@ import connectDB from './config/connectDB.js'
 import connectCloudinary from './config/cloudinary.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRouter from './routes/authRouter.js';
+import userRouter from './routes/userRouter.js';
 
 
 
@@ -57,7 +58,8 @@ app.use(express.urlencoded({ extended: true }));
 app.set('io', io);
 
 // Routes
-app.use('/api/auth', authRouter)
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter)
 // app.use('/api/auth', authRoutes);
 // app.use('/api/users', userRoutes);
 // app.use('/api/bookings', bookingRoutes);

@@ -1,60 +1,63 @@
+import User from "../models/User.js";
+import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 
 
-
-
-exports.getArtisans = async (req, res) => {
+export const getArtisans = async (req, res) => {
   try {
-    const { category, location, minRating, maxDistance, sortBy } = req.query;
+    // const { category, location, minRating, maxDistance, sortBy } = req.query;
     
-    let query = { role: 'artisan' };
+    // let query = { role: 'artisan' };
     
-    // Filter by category/skills
-    if (category) {
-      query.skills = { $in: [new RegExp(category, 'i')] };
-    }
+    // // Filter by category/skills
+    // if (category) {
+    //   query.skills = { $in: [new RegExp(category, 'i')] };
+    // }
     
-    // Filter by minimum rating
-    if (minRating) {
-      query.rating = { $gte: parseFloat(minRating) };
-    }
-
-    let artisans;
-
-    // Geospatial query for nearby artisans
-    // if (location && maxDistance) {
-    //   const coords = await geocodeAddress(location);
-    //   if (coords) {
-    //     artisans = await User.find({
-    //       ...query,
-    //       'location.coordinates': {
-    //         $near: {
-    //           $geometry: {
-    //             type: 'Point',
-    //             coordinates: [coords.lng, coords.lat]
-    //           },
-    //           $maxDistance: parseInt(maxDistance) * 1609 // Convert miles to meters
-    //         }
-    //       }
-    //     });
-    //   }
-    // } else {
-    //   artisans = await User.find(query);
+    // // Filter by minimum rating
+    // if (minRating) {
+    //   query.rating = { $gte: parseFloat(minRating) };
     // }
 
-    // Sort results
-    if (sortBy === 'rating') {
-      artisans.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === 'reviews') {
-      artisans.sort((a, b) => b.reviewCount - a.reviewCount);
-    }
+    // let artisans;
 
-    res.json({ success: true, count: artisans.length, artisans });
+    // // Geospatial query for nearby artisans
+    // // if (location && maxDistance) {
+    // //   const coords = await geocodeAddress(location);
+    // //   if (coords) {
+    // //     artisans = await User.find({
+    // //       ...query,
+    // //       'location.coordinates': {
+    // //         $near: {
+    // //           $geometry: {
+    // //             type: 'Point',
+    // //             coordinates: [coords.lng, coords.lat]
+    // //           },
+    // //           $maxDistance: parseInt(maxDistance) * 1609 // Convert miles to meters
+    // //         }
+    // //       }
+    // //     });
+    // //   }
+    // // } else {
+    // //   artisans = await User.find(query);
+    // // }
+
+    // // Sort results
+    // if (sortBy === 'rating') {
+    //   artisans.sort((a, b) => b.rating - a.rating);
+    // } else if (sortBy === 'reviews') {
+    //   artisans.sort((a, b) => b.reviewCount - a.reviewCount);
+    // }
+
+    const artisans = await User.find({role: 'artisan'})
+
+    res.json({ success: true,  artisans });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-exports.getArtisan = async (req, res) => {
+export const getArtisan = async (req, res) => {
   try {
     const artisan = await User.findById(req.params.id);
     
@@ -68,7 +71,7 @@ exports.getArtisan = async (req, res) => {
   }
 };
 
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const updates = { ...req.body };
     delete updates.password;
@@ -87,7 +90,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-exports.uploadAvatar = async (req, res) => {
+export const uploadAvatar = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Please upload a file' });
@@ -117,7 +120,7 @@ exports.uploadAvatar = async (req, res) => {
   }
 };
 
-exports.uploadPortfolio = async (req, res) => {
+export const uploadPortfolio = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'Please upload files' });

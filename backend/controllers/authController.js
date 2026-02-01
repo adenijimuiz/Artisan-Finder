@@ -32,6 +32,15 @@ export const register = async (req, res) => {
     //   }
     // }
 
+    const userExists = await User.findOne({email})
+    if (userExists) {
+      return res.status(409).json({success: false, message: 'User Already Exists'})
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({success: false, message: 'Please enter a strong password'})
+    }
+
     const user = await User.create({
       name,
       email,
@@ -60,7 +69,7 @@ export const register = async (req, res) => {
 // Register an Artisan
 export const registerArtisan = async (req, res) => {
   try {
-    const { name, email, password, bio, skills, experience, priceRange, portfolio } = req.body;
+    const { name, email, password, phone, bio, skills, experience, priceRange} = req.body;
 
     // Geocode location if provided
     // let locationData = {};
@@ -76,19 +85,31 @@ export const registerArtisan = async (req, res) => {
     //     };
     //   }
     // }
-    
+
+    // if (!name || !email || !password || !phone || !bio || !skills || !experience || !priceRange) {
+    //   return res.status(409).json({success: false, message: 'All value needed'})
+    // }
+
+    const userExists = await User.findOne({email})
+    if (userExists) {
+      return res.status(409).json({success: false, message: 'User Already Exists'})
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({success: false, message: 'Please enter a strong password'})
+    }
 
     const user = await User.create({
       name,
       email,
       password,
-      location: locationData,
+      phone,
+      // location: locationData,
       role: 'artisan',
       bio,
       skills,
       experience,
       priceRange,
-      portfolio
     });
 
     const token = signToken(user._id);
@@ -102,7 +123,14 @@ export const registerArtisan = async (req, res) => {
         email: user.email,
         role: user.role,
         avatar: user.avatar,
-        verified: user.verified
+        verified: user.verified,
+        phone: user.phone,
+        bio: user.bio,
+        skills: user.skills,
+        experience: user.experience,
+        // location: user.location?.address,
+        priceRange: user.priceRange,
+        availability: user.availability,
       }
     });
   } catch (error) {
@@ -139,7 +167,7 @@ export const login = async (req, res) => {
         phone: user.phone,
         skills: user.skills,
         experience: user.experience,
-        location: user.location?.address,
+        // location: user.location?.address,
         rating: user.rating,
         reviewCount: user.reviewCount,
         priceRange: user.priceRange,

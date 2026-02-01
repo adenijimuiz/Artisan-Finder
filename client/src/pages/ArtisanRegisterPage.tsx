@@ -27,7 +27,7 @@ export const ArtisanRegisterPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (step < 3) {
+    if (step < 2) {
       setStep(step + 1);
     } else {
       const newUser = {
@@ -49,7 +49,7 @@ export const ArtisanRegisterPage = () => {
       <div className="container mx-auto px-4 max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Register as an Artisan - Step {step} of 3</CardTitle>
+            <CardTitle className="text-2xl">Register as an Artisan - Step {step} of 2</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -151,7 +151,7 @@ export const ArtisanRegisterPage = () => {
                 </>
               )}
 
-              {step === 3 && (
+              {/* {step === 3 && (
                 <>
                   <div className="border-2 border-dashed rounded-lg p-8 text-center">
                     <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
@@ -173,7 +173,7 @@ export const ArtisanRegisterPage = () => {
                     </p>
                   </div>
                 </>
-              )}
+              )} */}
 
               <div className="flex justify-between pt-4">
                 {step > 1 && (
@@ -182,7 +182,7 @@ export const ArtisanRegisterPage = () => {
                   </Button>
                 )}
                 <Button type="submit" className="ml-auto">
-                  {step === 3 ? 'Complete Registration' : 'Next'}
+                  {step === 2 ? 'Complete Registration' : 'Next'}
                 </Button>
               </div>
             </form>

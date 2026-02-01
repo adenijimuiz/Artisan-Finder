@@ -29,7 +29,11 @@ const userSchema = new mongoose.Schema({
   phone: String,
 
   // Artisan specific fields
-  avatar: String,
+  // profession: String,
+  avatar: {
+    type: String,
+    default: ''
+  },
   bio: String,
   skills: {
     type: Array,

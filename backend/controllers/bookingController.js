@@ -99,3 +99,57 @@ exports.updateBooking = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const acceptBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    if (booking.artisan.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Only the artisan can accept bookings' });
+    }
+
+    booking.status = 'accepted';
+    await booking.save();
+
+    const populatedBooking = await booking.populate(['artisan', 'client']);
+
+    // Notify client
+    const io = req.app.get('io');
+    io.to(`user_${booking.client}`).emit('booking_accepted', populatedBooking);
+
+    res.json({ success: true, booking: populatedBooking });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const completeBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    if (booking.artisan.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Only the artisan can complete bookings' });
+    }
+
+    booking.status = 'completed';
+    await booking.save();
+
+    const populatedBooking = await booking.populate(['artisan', 'client']);
+
+    // Notify client
+    const io = req.app.get('io');
+    io.to(`user_${booking.client}`).emit('booking_completed', populatedBooking);
+
+    res.json({ success: true, booking: populatedBooking });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

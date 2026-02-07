@@ -10,6 +10,7 @@ import connectCloudinary from './config/cloudinary.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRouter from './routes/authRouter.js';
 import userRouter from './routes/userRouter.js';
+import bookingRouter from './routes/bookingRouter.js';
 
 
 
@@ -59,10 +60,9 @@ app.set('io', io);
 
 // Routes
 app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter)
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// app.use('/api/bookings', bookingRoutes);
+app.use('/api/users', userRouter);
+app.use('/api/bookings', bookingRouter)
+
 // app.use('/api/reviews', reviewRoutes);
 // app.use('/api/messages', messageRoutes);
 // app.use('/api/payments', paymentRoutes);

@@ -25,7 +25,8 @@ const bookingSchema = new mongoose.Schema({
   },
   time: String,
   location: {
-    address: String,
+    type: String,
+    required: true
     // coordinates: {
     //   type: { type: String, default: 'Point' },
     //   coordinates: [Number]

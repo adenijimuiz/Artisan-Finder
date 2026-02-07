@@ -45,3 +45,57 @@ export const getBookings = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate('artisan')
+      .populate('client');
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Check authorization
+    if (booking.artisan._id.toString() !== req.user._id.toString() &&
+        booking.client._id.toString() !== req.user._id.toString() &&
+        req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    res.json({ success: true, booking });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.updateBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Check authorization
+    if (booking.artisan.toString() !== req.user._id.toString() &&
+        booking.client.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    ).populate(['artisan', 'client']);
+
+    // Notify other party via Socket.IO
+    const io = req.app.get('io');
+    const notifyUserId = req.user.role === 'artisan' ? booking.client : booking.artisan;
+    io.to(`user_${notifyUserId}`).emit('booking_updated', updatedBooking);
+
+    res.json({ success: true, booking: updatedBooking });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

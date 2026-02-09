@@ -21,15 +21,17 @@ export interface User {
 }
 
 export interface Booking {
-  id: string;
+  _id: string;
   artisanId: string;
   clientId: string;
+  artisan: User;
   serviceType: string;
   description: string;
   date: string;
   time: string;
   location: string;
   budget: string;
+  specialInstructions?: string;
   status: 'pending' | 'accepted' | 'completed' | 'cancelled';
   images?: string[];
 }
@@ -56,9 +58,11 @@ export interface Message {
 interface AppContextType {
   currentUser: User | null;
   users: User[];
+  setBookings: (bookings: Booking[]) => void;
   bookings: Booking[];
   reviews: Review[];
   messages: Message[];
+  navigate: (path: string) => void;
   setCurrentUser: (user: User | null) => void;
   addBooking: (booking: Booking) => void;
   updateBooking: (id: string, updates: Partial<Booking>) => void;
@@ -317,8 +321,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         currentUser,
         users,
         bookings,
+        setBookings,
         reviews,
         messages,
+        navigate,
         setCurrentUser,
         addBooking,
         updateBooking,

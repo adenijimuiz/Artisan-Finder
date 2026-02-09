@@ -35,7 +35,7 @@ export const ClientRegisterPage = () => {
           toast.success('Registration successful! Welcome to ArtisanFinder.');
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
-          navigate('/dashboard/client');
+          response.data.user.role === 'client' ? navigate('/dashboard/client') : navigate('/dashboard/artisan');
         } else {
           toast.error(response.data.message)
           console.error('Registration failed:', response.data.message);
@@ -50,7 +50,7 @@ export const ClientRegisterPage = () => {
           toast.success('Login successful! Welcome back.');
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
-          navigate('/dashboard/client');
+          response.data.user.role === 'client' ? navigate('/dashboard/client') : navigate('/dashboard/artisan');
         } else {
           toast.error(response.data.message)
         }

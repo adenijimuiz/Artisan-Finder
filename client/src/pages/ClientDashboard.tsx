@@ -7,26 +7,25 @@ import { Heart, Calendar, Star, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { use, useEffect } from 'react';
 import { bookingsAPI } from '@/services/api';
+import { toast } from 'react-toastify';
 
 export const ClientDashboard = () => {
-  const { currentUser, bookings, users, getFavoriteArtisans } = useApp();
+  const { currentUser, setBookings,bookings, users, getFavoriteArtisans, navigate } = useApp();
   
-  const myBookings = bookings.filter(b => b.clientId === currentUser?.id);
-  const favoriteIds = getFavoriteArtisans();
-  const favoriteArtisans = users.filter(u => favoriteIds.includes(u.id));
-
+  
   const getBooking = async () => {
     try {
       const response = await bookingsAPI.getBookings();
       // const data = await response.json();
-      // if (response.) {
-        
-      // } else {
-        
-      // }
+      if (response.data.success) {
+        setBookings(response.data.bookings);
+      } else {
+        toast.error(response.data.message || 'Failed to fetch bookings');
+      }
       console.log('Bookings response', response)
       console.log('Bookings response', response.data)
     } catch (error) {
+      toast.error('Error fetching bookings');
       console.log('Error fetching bookings', error)
     }
   }
@@ -34,6 +33,10 @@ export const ClientDashboard = () => {
   useEffect(() => {
     getBooking()
   }, [])
+  
+  const myBookings = bookings
+  const favoriteIds = getFavoriteArtisans();
+  const favoriteArtisans = users.filter(u => favoriteIds.includes(u.id));
 
 
   return (
@@ -118,13 +121,16 @@ export const ClientDashboard = () => {
                     {myBookings
                       .filter(b => b.status !== 'completed' && b.status !== 'cancelled')
                       .map(booking => {
-                        const artisan = users.find(u => u.id === booking.artisanId);
+                        // const artisan = users.find(u => u.id === booking.artisanId);
+                        // console.log('Booking', booking)
+                        // console.log('Booking', booking._id)
+                        // console.log(booking.artisan.name)
                         return (
-                          <div key={booking.id} className="border rounded-lg p-4">
+                          <div key={booking._id} className="border rounded-lg p-4">
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <h3 className="font-semibold">{booking.serviceType}</h3>
-                                <p className="text-sm text-gray-600">Artisan: {artisan?.name}</p>
+                                <p className="text-sm text-gray-600">Artisan: {booking?.artisan?.name}</p>
                               </div>
                               <Badge>{booking.status}</Badge>
                             </div>
@@ -135,7 +141,7 @@ export const ClientDashboard = () => {
                             </div>
                             <div className="flex gap-2 mt-4">
                               <Button size="sm">Message Artisan</Button>
-                              <Button size="sm" variant="outline">View Details</Button>
+                              <Button size="sm" variant="outline" onClick={() => navigate(`/booking-detail/${booking._id}`)}>View Details</Button>
                             </div>
                           </div>
                         );

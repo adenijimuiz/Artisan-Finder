@@ -18,6 +18,7 @@ import { AdminLoginPage } from '@/pages/AdminLoginPage';
 import NotFound from '@/pages/NotFound';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BookingDetailPage from './pages/BookingDetailPage';
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -200,7 +201,8 @@ function AppContent() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/artisan/:id" element={<ArtisanProfilePage />} />
           <Route path="/book/:id" element={<BookingPage />} />
-          
+          <Route path="/booking-detail/:id" element={<BookingDetailPage />} />
+
           <Route
             path="/dashboard/artisan"
             element={

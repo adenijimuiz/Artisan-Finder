@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export interface User {
   id: string;
@@ -262,6 +263,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const addBooking = (booking: Booking) => {
     setBookings(prev => [...prev, booking]);
@@ -288,6 +290,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         : [...prev, artisanId]
     );
   };
+
+   useEffect(() => {
+     const token = localStorage.getItem('token');
+     console.log('AppContext token', token)
+     const user = localStorage.getItem('user');
+      console.log('AppContext user', user)
+     if (token && user) {
+       setCurrentUser(JSON.parse(user));
+       if (JSON.parse(user)?.role == 'client') {
+        navigate('/dashboard/client');
+       }else if (JSON.parse(user)?.role == 'artisan') {
+        navigate('/dashboard/artisan');
+       }else if (JSON.parse(user)?.role == 'admin') {
+        navigate('/dashboard/admin');
+       }
+      //  connectSocket(JSON.parse(user).id);
+     }
+   }, []);
+
+
 
   return (
     <AppContext.Provider

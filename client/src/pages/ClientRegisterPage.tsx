@@ -5,29 +5,59 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useApp } from '@/context/AppContext';
+import { authAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 export const ClientRegisterPage = () => {
   const navigate = useNavigate();
   const { setCurrentUser } = useApp();
-  const [CurrentState, setCurrentState] = useState('Registers')
+  const [CurrentState, setCurrentState] = useState('Register'); // 'Register' or 'Login'
   
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
-    location: ''
+    location: '',
+    role: 'client'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = {
-      id: `client-${Date.now()}`,
-      ...formData,
-      role: 'client' as const
-    };
-    setCurrentUser(newUser);
-    navigate('/dashboard/client');
+
+    try {
+      if (CurrentState === 'Register') {
+        const response = await authAPI.register(formData);
+
+        console.log('Login response', response)
+        if (response.data.success) {
+          setCurrentUser(response.data.user);
+          toast.success('Registration successful! Welcome to ArtisanFinder.');
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+          navigate('/dashboard/client');
+        } else {
+          toast.error(response.data.message)
+          console.error('Registration failed:', response.data.message);
+        }
+      } else {
+        const response = await authAPI.login(formData.email, formData.password);
+        console.log('Login response', response)
+        console.log('Login response', response.data.success)
+        // console.log(response.data)
+        if (response.data.success) {
+          setCurrentUser(response.data.user);
+          toast.success('Login successful! Welcome back.');
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+          navigate('/dashboard/client');
+        } else {
+          toast.error(response.data.message)
+        }
+      }
+    } catch (error) {
+      console.error('Error during authentication:', error);
+    }
   };
 
   return (

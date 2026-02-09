@@ -16,7 +16,8 @@ import { LogOut } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AdminLoginPage } from '@/pages/AdminLoginPage';
 import NotFound from '@/pages/NotFound';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -187,7 +188,9 @@ const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode;
 
 function AppContent() {
   return (
-    <Router>
+    <>
+    <ToastContainer />
+    <>
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -233,7 +236,8 @@ function AppContent() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
-    </Router>
+    </>
+    </>
   );
 }
 

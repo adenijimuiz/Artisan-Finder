@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, Calendar, Star, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { use, useEffect } from 'react';
+import { bookingsAPI } from '@/services/api';
 
 export const ClientDashboard = () => {
   const { currentUser, bookings, users, getFavoriteArtisans } = useApp();
@@ -12,6 +14,27 @@ export const ClientDashboard = () => {
   const myBookings = bookings.filter(b => b.clientId === currentUser?.id);
   const favoriteIds = getFavoriteArtisans();
   const favoriteArtisans = users.filter(u => favoriteIds.includes(u.id));
+
+  const getBooking = async () => {
+    try {
+      const response = await bookingsAPI.getBookings();
+      // const data = await response.json();
+      // if (response.) {
+        
+      // } else {
+        
+      // }
+      console.log('Bookings response', response)
+      console.log('Bookings response', response.data)
+    } catch (error) {
+      console.log('Error fetching bookings', error)
+    }
+  }
+
+  useEffect(() => {
+    getBooking()
+  }, [])
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -31,7 +54,7 @@ export const ClientDashboard = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
@@ -62,7 +85,7 @@ export const ClientDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          {/* <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
                 <p className="text-sm text-gray-600">Total Spent</p>
@@ -70,7 +93,7 @@ export const ClientDashboard = () => {
               </div>
               <p className="text-3xl">$1,800</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Main Content */}
@@ -79,7 +102,7 @@ export const ClientDashboard = () => {
             <TabsTrigger value="bookings">Active Bookings</TabsTrigger>
             <TabsTrigger value="history">Request History</TabsTrigger>
             <TabsTrigger value="favorites">Favorite Artisans</TabsTrigger>
-            <TabsTrigger value="payments">Payment History</TabsTrigger>
+            {/* <TabsTrigger value="payments">Payment History</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="bookings" className="space-y-4">
@@ -190,7 +213,7 @@ export const ClientDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="payments">
+          {/* <TabsContent value="payments">
             <Card>
               <CardHeader>
                 <CardTitle>Payment History</CardTitle>
@@ -218,7 +241,7 @@ export const ClientDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </div>

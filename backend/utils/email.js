@@ -34,7 +34,7 @@ export const sendBookingNotification = async (booking, artisan, client) => {
     Service: ${booking.serviceType}
     Date: ${new Date(booking.date).toLocaleDateString()}
     Time: ${booking.time}
-    Location: ${booking.location?.address || 'Not specified'}
+    Location: ${booking.location || 'Not specified'}
     Budget: ${booking.budget ? `₦${booking.budget}` : 'Not specified'}
     
     Login to your dashboard to view details and respond.

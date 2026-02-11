@@ -1,47 +1,94 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useApp } from '@/context/AppContext';
-import { Upload } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useApp } from "@/context/AppContext";
+import { authAPI } from "@/services/api";
+import { toast } from "react-toastify";
+// import { Upload } from 'lucide-react';
 
 export const ArtisanRegisterPage = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
   const { setCurrentUser } = useApp();
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    bio: '',
-    skills: '',
-    experience: '',
-    // location: '',
-    priceRange: ''
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    bio: "",
+    skills: "",
+    experience: "",
+    location: "",
+    priceRange: "",
+    businessName: "",
+    nin: "",
+    nextOfKinName: "",
+    nextOfKinAddress: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step < 2) {
+
+    if (step < 3) {
       setStep(step + 1);
-    } else {
-      const newUser = {
-        id: `artisan-${Date.now()}`,
-        ...formData,
-        role: 'artisan' as const,
-        skills: formData.skills.split(',').map(s => s.trim()),
-        verified: false,
-        rating: 0,
-        reviewCount: 0
-      };
-      setCurrentUser(newUser);
-      navigate('/dashboard/artisan');
+      return;
     }
+
+    try {
+      const artisanData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        bio: formData.bio,
+        skills: formData.skills.split(",").map((s) => s.trim()), // Convert string to array
+        experience: formData.experience,
+        priceRange: formData.priceRange,
+        location: formData.location,
+        businessName: formData.businessName,
+        nin: formData.nin,
+        nextOfKinName: formData.nextOfKinName,
+        nextOfKinAddress: formData.nextOfKinAddress,
+      };
+      const response = await authAPI.registarArtisan(artisanData);
+      console.log("Registration response", response.data);
+      if (response.data.success) {
+        setCurrentUser(response.data.user);
+        navigate("/dashboard/artisan");
+      } else {
+        toast.error(
+          response.data.message || "Registration failed. Please try again.",
+        );
+      }
+    } catch (error :any) {
+      console.log("Error during registration:", error);
+      toast.error(
+        error.message || "An error occurred during registration. Please try again later.",
+      );
+    }
+
+    // if (step < 3) {
+    //   setStep(step + 1);
+    // } else {
+    //   // const newUser = {
+    //   //   id: `artisan-${Date.now()}`,
+    //   //   ...formData,
+    //   //   role: 'artisan' as const,
+    //   //   skills: formData.skills.split(',').map(s => s.trim()),
+    //   //   verified: false,
+    //   //   rating: 0,
+    //   //   reviewCount: 0
+    //   // };
+    //   const response = await authAPI.registarArtisan(formData)
+    //   console.log(formData)
+    //   // setCurrentUser(newUser);
+    //   navigate('/dashboard/artisan');
+    // }
   };
 
   return (
@@ -49,7 +96,9 @@ export const ArtisanRegisterPage = () => {
       <div className="container mx-auto px-4 max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Register as an Artisan - Step {step} of 2</CardTitle>
+            <CardTitle className="text-2xl">
+              Register as an Artisan - Step {step} of 3
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -61,7 +110,9 @@ export const ArtisanRegisterPage = () => {
                       id="name"
                       required
                       value={formData.name}
-                      onChange={e => setFormData({...formData, name: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                     />
                   </div>
                   <div>
@@ -71,7 +122,9 @@ export const ArtisanRegisterPage = () => {
                       type="email"
                       required
                       value={formData.email}
-                      onChange={e => setFormData({...formData, email: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                     />
                   </div>
                   <div>
@@ -81,7 +134,9 @@ export const ArtisanRegisterPage = () => {
                       type="password"
                       required
                       value={formData.password}
-                      onChange={e => setFormData({...formData, password: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
                     />
                   </div>
                   <div>
@@ -90,7 +145,9 @@ export const ArtisanRegisterPage = () => {
                       id="phone"
                       required
                       value={formData.phone}
-                      onChange={e => setFormData({...formData, phone: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                     />
                   </div>
                 </>
@@ -99,13 +156,31 @@ export const ArtisanRegisterPage = () => {
               {step === 2 && (
                 <>
                   <div>
+                    <Label htmlFor="businessName">Business Name *</Label>
+                    <Input
+                      id="businessName"
+                      placeholder="e.g., John's Carpentry Services"
+                      required
+                      value={formData.businessName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          businessName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div>
                     <Label htmlFor="skills">Skills (comma-separated) *</Label>
                     <Input
                       id="skills"
                       placeholder="e.g., Carpentry, Furniture Making, Cabinet Installation"
                       required
                       value={formData.skills}
-                      onChange={e => setFormData({...formData, skills: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, skills: e.target.value })
+                      }
                     />
                   </div>
                   <div>
@@ -115,7 +190,9 @@ export const ArtisanRegisterPage = () => {
                       placeholder="e.g., 5 years"
                       required
                       value={formData.experience}
-                      onChange={e => setFormData({...formData, experience: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, experience: e.target.value })
+                      }
                     />
                   </div>
                   <div>
@@ -125,27 +202,83 @@ export const ArtisanRegisterPage = () => {
                       placeholder="Tell clients about your expertise..."
                       required
                       value={formData.bio}
-                      onChange={e => setFormData({...formData, bio: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, bio: e.target.value })
+                      }
                     />
                   </div>
-                  {/* <div>
+                  <div>
                     <Label htmlFor="location">Service Location *</Label>
                     <Input
                       id="location"
-                      placeholder="e.g., New York, NY"
+                      placeholder="e.g 123, Main St, ifako-ijaiye, Lagos"
                       required
                       value={formData.location}
-                      onChange={e => setFormData({...formData, location: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, location: e.target.value })
+                      }
                     />
-                  </div> */}
+                  </div>
                   <div>
-                    <Label htmlFor="priceRange">Price Range (per hour) *</Label>
+                    <Label htmlFor="priceRange">Price Range *</Label>
                     <Input
                       id="priceRange"
-                      placeholder="e.g., $50-$100/hr"
+                      placeholder="e.g ₦5,000-₦100,000"
                       required
                       value={formData.priceRange}
-                      onChange={e => setFormData({...formData, priceRange: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, priceRange: e.target.value })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {step === 3 && (
+                <>
+                  <div>
+                    <Label htmlFor="Nin">Nin *</Label>
+                    <Input
+                      id="Nin"
+                      placeholder="e.g., 12345678901"
+                      required
+                      value={formData.nin}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nin: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="nextOfKin">Next Of Kin *</Label>
+                    <Input
+                      id="nextOfKin"
+                      placeholder="e.g., John Doe, 08012345678"
+                      required
+                      value={formData.nextOfKinName}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nextOfKinName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="nextOfKinAddress">
+                      Next Of Kin Address *
+                    </Label>
+                    <Input
+                      id="nextOfKinAddress"
+                      placeholder="e.g., 123, Main St, ifako-ijaiye, Lagos"
+                      required
+                      value={formData.nextOfKinAddress}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nextOfKinAddress: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </>
@@ -177,12 +310,16 @@ export const ArtisanRegisterPage = () => {
 
               <div className="flex justify-between pt-4">
                 {step > 1 && (
-                  <Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(step - 1)}
+                  >
                     Previous
                   </Button>
                 )}
                 <Button type="submit" className="ml-auto">
-                  {step === 2 ? 'Complete Registration' : 'Next'}
+                  {step === 3 ? "Complete Registration" : "Next"}
                 </Button>
               </div>
             </form>

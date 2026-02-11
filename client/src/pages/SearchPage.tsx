@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Star, MapPin, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usersAPI } from '@/services/api';
 
 export const SearchPage = () => {
   const { users, toggleFavorite, getFavoriteArtisans } = useApp();
@@ -14,6 +15,16 @@ export const SearchPage = () => {
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('rating');
   
+  const getArtisans = async () => {
+    const response = await usersAPI.getArtisans();
+    console.log('Fetched artisans:', response.data);
+    return response.data;
+  };
+
+  useEffect(() => {
+    getArtisans()
+  }, [])
+
   const artisans = users.filter(u => u.role === 'artisan');
   const favorites = getFavoriteArtisans();
   

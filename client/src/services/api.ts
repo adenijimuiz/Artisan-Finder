@@ -67,9 +67,25 @@ export const authAPI = {
     name: string;
     email: string;
     password: string;
-    role: string;
+    phone: string;
     location?: string;
   }) => api.post('/auth/register', data), //✅✅✅
+
+  registarArtisan: (data: {
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+    bio: string;
+    skills: string[];
+    experience: string;
+    priceRange: string;
+    location: string;
+    businessName: string;
+    nin: string;
+    nextOfKinName: string;
+    nextOfKinAddress: string;
+  }) => api.post('/auth/register-artisan', data), //✅✅✅
 
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }), //✅✅✅
@@ -79,13 +95,15 @@ export const authAPI = {
 
 // Users API
 export const usersAPI = {
-  getArtisans: (params?: {
-    category?: string;
-    location?: string;
-    minRating?: number;
-    maxDistance?: number;
-    sortBy?: string;
-  }) => api.get('/users/artisans', { params }),
+  // getArtisans: (params?: {
+  //   category?: string;
+  //   location?: string;
+  //   minRating?: number;
+  //   maxDistance?: number;
+  //   sortBy?: string;
+  // }) => api.get('/users/artisans', { params }),
+
+  getArtisans: () => api.get('/users/artisans'),
 
   getArtisan: (id: string) => api.get(`/users/artisans/${id}`),
 

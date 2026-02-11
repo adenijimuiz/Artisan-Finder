@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  businessName: String,
+  nin: String,
+  nextOfKinName: String,
+  nextOfKinAddress: String,
   bio: String,
   skills: {
     type: Array,

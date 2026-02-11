@@ -13,7 +13,7 @@ const signToken = (id) => {
 // Register a new client
 export const register = async (req, res) => {
   try {
-    const { name, email, password} = req.body;
+    const { name, email, password, phone, location} = req.body;
 
     //will be removing location for now
 
@@ -45,6 +45,8 @@ export const register = async (req, res) => {
       name,
       email,
       password,
+      phone,
+      location,
       verified: true
     });
 
@@ -69,7 +71,7 @@ export const register = async (req, res) => {
 // Register an Artisan
 export const registerArtisan = async (req, res) => {
   try {
-    const { name, email, password, phone, bio, skills, experience, priceRange} = req.body;
+    const { name, email, password, phone, bio, skills, experience, priceRange, location, businessName, nin, nextOfKinName, nextOfKinAddress} = req.body;
 
     // Geocode location if provided
     // let locationData = {};
@@ -104,12 +106,16 @@ export const registerArtisan = async (req, res) => {
       email,
       password,
       phone,
-      // location: locationData,
+      location,
       role: 'artisan',
       bio,
       skills,
       experience,
       priceRange,
+      businessName,
+      nin,
+      nextOfKinName,
+      nextOfKinAddress
     });
 
     const token = signToken(user._id);
@@ -167,7 +173,7 @@ export const login = async (req, res) => {
         phone: user.phone,
         skills: user.skills,
         experience: user.experience,
-        // location: user.location?.address,
+        location: user.location,
         rating: user.rating,
         reviewCount: user.reviewCount,
         priceRange: user.priceRange,

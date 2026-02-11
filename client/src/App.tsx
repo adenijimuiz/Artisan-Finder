@@ -24,24 +24,6 @@ import BookingDetailPage from './pages/BookingDetailPage';
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { currentUser, setCurrentUser } = useApp();
 
-  // const adminUser = {
-  //     id: '1',
-  // name: 'ola',
-  // email: 'sad',
-  // role: 'admin',
-  // phone: '12345',
-  // avatar: 'non2',
-  // bio: 'as',
-  // skills: '25',
-  // experience: 'asd',
-  // location: 'asd',
-  // rating: 3,
-  // reviewCount: 3,
-  // priceRange: 'asd',
-  // availability: 'asd',
-  // portfolio: 'asd',
-  // verified: true,
-  // }
 
 
   return (
@@ -79,7 +61,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCurrentUser(null)} className="cursor-pointer">
+                    <DropdownMenuItem onClick={() => {setCurrentUser(null); localStorage.removeItem('token'); localStorage.removeItem('user')}} className="cursor-pointer">
                       <LogOut className="w-4 h-4 mr-2" />
                       Logout
                     </DropdownMenuItem>
@@ -148,33 +130,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode; requiredRole?: string }) => {
   const { currentUser } = useApp();
 
-    /// uncomment to enter as an admin
-    // const adminUser = {
-  //     id: '1',
-  // name: 'ola',
-  // email: 'sad',
-  // role: 'admin',
-  // phone: '12345',
-  // avatar: 'non2',
-  // bio: 'as',
-  // skills: '25',
-  // experience: 'asd',
-  // location: 'asd',
-  // rating: 3,
-  // reviewCount: 3,
-  // priceRange: 'asd',
-  // availability: 'asd',
-  // portfolio: 'asd',
-  // verified: true,
-  // }
-
-  // if (!adminUser) {
-  //   return <Navigate to="/register/client" />;
-  // }
-
-  // if (requiredRole && adminUser.role !== requiredRole) {
-  //   return <Navigate to={`/dashboard/${adminUser.role}`} />;
-  // }
 
   if (!currentUser) {
     return <Navigate to="/register/client" />;

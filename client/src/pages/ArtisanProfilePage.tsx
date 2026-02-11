@@ -1,20 +1,65 @@
-import { useParams, Link } from 'react-router-dom';
-import { useApp } from '@/context/AppContext';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, MapPin, Award, Calendar, MessageSquare } from 'lucide-react';
+import { useParams, Link } from "react-router-dom";
+import { useApp } from "@/context/AppContext";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Star,
+  MapPin,
+  Award,
+  Calendar,
+  MessageSquare
+} from "lucide-react";
+import { usersAPI } from "@/services/api";
+import { useEffect, useState } from "react";
 
 export const ArtisanProfilePage = () => {
+  interface Artisan {
+    _id: string;
+    name: string;
+    email: string;
+    role: "artisan" | "client" | "admin";
+    phone?: string;
+    avatar?: string;
+    bio?: string;
+    skills?: string[];
+    experience?: string;
+    location?: string;
+    rating?: number;
+    reviewCount?: number;
+    priceRange?: string;
+    availability?: string;
+    portfolio?: string[];
+    verified?: boolean;
+  }
   const { id } = useParams();
   const { users, reviews } = useApp();
-  
-  const artisan = users.find(u => u.id === id && u.role === 'artisan');
-  const artisanReviews = reviews.filter(r => r.artisanId === id);
+  const [artisan, setArtisan] = useState<Artisan | null>(null);
+
+  const getArtisan = async (params: string) => {
+    try {
+      const response = await usersAPI.getArtisan(params);
+      console.log("Fetched artisan:", response.data.artisan);
+      console.log("Fetched artisan:", response.data.artisan.avatar);
+      setArtisan(response.data.artisan);
+    } catch (error) {
+      console.error("Error fetching artisan:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      getArtisan(id);
+    }
+  }, [id]);
 
   if (!artisan) {
-    return <div className="min-h-screen flex items-center justify-center">Artisan not found</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Artisan not found
+      </div>
+    );
   }
 
   return (
@@ -25,7 +70,11 @@ export const ArtisanProfilePage = () => {
           <div className="flex gap-6">
             <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
               {artisan.avatar && (
-                <img src={artisan.avatar} alt={artisan.name} className="w-full h-full object-cover" />
+                <img
+                  src={artisan.avatar}
+                  alt={artisan.name}
+                  className="w-full h-full object-cover"
+                />
               )}
             </div>
             <div className="flex-1">
@@ -37,8 +86,12 @@ export const ArtisanProfilePage = () => {
                       <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       <span className="text-xl">{artisan.rating}</span>
                     </div>
-                    <span className="text-gray-600">({artisan.reviewCount} reviews)</span>
-                    {artisan.verified && <Badge variant="secondary">✓ Verified</Badge>}
+                    <span className="text-gray-600">
+                      ({artisan.reviewCount} reviews)
+                    </span>
+                    {artisan.verified && (
+                      <Badge variant="secondary">✓ Verified</Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <MapPin className="w-4 h-4" />
@@ -47,7 +100,13 @@ export const ArtisanProfilePage = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl mb-2">{artisan.priceRange}</p>
-                  <Badge variant={artisan.availability === 'Available' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={
+                      artisan.availability === "Available"
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
                     {artisan.availability}
                   </Badge>
                 </div>
@@ -74,10 +133,10 @@ export const ArtisanProfilePage = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl mb-4">About Me</h3>
                     <p className="text-gray-700 mb-6">{artisan.bio}</p>
-                    
+
                     <h4 className="mb-3">Skills & Expertise</h4>
                     <div className="flex flex-wrap gap-2 mb-6">
-                      {artisan.skills?.map(skill => (
+                      {artisan.skills?.map((skill) => (
                         <Badge key={skill}>{skill}</Badge>
                       ))}
                     </div>
@@ -108,8 +167,15 @@ export const ArtisanProfilePage = () => {
                     <h3 className="text-xl mb-4">Portfolio</h3>
                     <div className="grid grid-cols-2 gap-4">
                       {artisan.portfolio?.map((img, idx) => (
-                        <div key={idx} className="aspect-square rounded-lg overflow-hidden bg-gray-200">
-                          <img src={img} alt={`Work ${idx + 1}`} className="w-full h-full object-cover" />
+                        <div
+                          key={idx}
+                          className="aspect-square rounded-lg overflow-hidden bg-gray-200"
+                        >
+                          <img
+                            src={img}
+                            alt={`Work ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                     </div>
@@ -117,19 +183,26 @@ export const ArtisanProfilePage = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="reviews">
+              {/* <TabsContent value="reviews">
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-xl mb-4">Reviews ({artisanReviews.length})</h3>
+                    <h3 className="text-xl mb-4">
+                      Reviews ({artisanReviews.length})
+                    </h3>
                     <div className="space-y-6">
-                      {artisanReviews.map(review => (
+                      {artisanReviews.map((review) => (
                         <div key={review.id} className="border-b pb-4">
                           <div className="flex items-center gap-2 mb-2">
                             <p>{review.clientName}</p>
                             <div className="flex">
-                              {Array.from({ length: review.rating }).map((_, i) => (
-                                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              ))}
+                              {Array.from({ length: review.rating }).map(
+                                (_, i) => (
+                                  <Star
+                                    key={i}
+                                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                                  />
+                                ),
+                              )}
                             </div>
                           </div>
                           <p className="text-gray-700 mb-1">{review.comment}</p>
@@ -139,7 +212,7 @@ export const ArtisanProfilePage = () => {
                     </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
           </div>
 
@@ -147,7 +220,7 @@ export const ArtisanProfilePage = () => {
           <div className="space-y-4">
             <Card>
               <CardContent className="p-6">
-                <Link to={`/book/${artisan.id}`}>
+                <Link to={`/book/${artisan._id}`}>
                   <Button className="w-full mb-3">Book Service</Button>
                 </Link>
                 <Button variant="outline" className="w-full">

@@ -103,7 +103,7 @@ export const usersAPI = {
   //   sortBy?: string;
   // }) => api.get('/users/artisans', { params }),
 
-  getArtisans: () => api.get('/users/artisans'),
+  getArtisans: () => api.get('/users/artisans'), //✅✅✅
 
   getArtisan: (id: string) => api.get(`/users/artisans/${id}`),
 

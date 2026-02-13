@@ -71,24 +71,6 @@ export const ArtisanRegisterPage = () => {
         error.message || "An error occurred during registration. Please try again later.",
       );
     }
-
-    // if (step < 3) {
-    //   setStep(step + 1);
-    // } else {
-    //   // const newUser = {
-    //   //   id: `artisan-${Date.now()}`,
-    //   //   ...formData,
-    //   //   role: 'artisan' as const,
-    //   //   skills: formData.skills.split(',').map(s => s.trim()),
-    //   //   verified: false,
-    //   //   rating: 0,
-    //   //   reviewCount: 0
-    //   // };
-    //   const response = await authAPI.registarArtisan(formData)
-    //   console.log(formData)
-    //   // setCurrentUser(newUser);
-    //   navigate('/dashboard/artisan');
-    // }
   };
 
   return (

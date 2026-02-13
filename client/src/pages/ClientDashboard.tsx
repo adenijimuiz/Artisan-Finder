@@ -1,18 +1,24 @@
-import { useApp } from '@/context/AppContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Calendar, Star, CreditCard } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { use, useEffect } from 'react';
-import { bookingsAPI } from '@/services/api';
-import { toast } from 'react-toastify';
+import { useApp } from "@/context/AppContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Heart, Calendar, Star, CreditCard } from "lucide-react";
+import { Link } from "react-router-dom";
+import { use, useEffect } from "react";
+import { bookingsAPI } from "@/services/api";
+import { toast } from "react-toastify";
 
 export const ClientDashboard = () => {
-  const { currentUser, setBookings,bookings, users, getFavoriteArtisans, navigate } = useApp();
-  
-  
+  const {
+    currentUser,
+    setBookings,
+    bookings,
+    users,
+    getFavoriteArtisans,
+    navigate,
+  } = useApp();
+
   const getBooking = async () => {
     try {
       const response = await bookingsAPI.getBookings();
@@ -20,40 +26,43 @@ export const ClientDashboard = () => {
       if (response.data.success) {
         setBookings(response.data.bookings);
       } else {
-        toast.error(response.data.message || 'Failed to fetch bookings');
+        toast.error(response.data.message || "Failed to fetch bookings");
       }
-      console.log('Bookings response', response)
-      console.log('Bookings response', response.data)
+      console.log("Bookings response", response);
+      console.log("Bookings response", response.data);
     } catch (error) {
-      toast.error('Error fetching bookings');
-      console.log('Error fetching bookings', error)
+      toast.error("Error fetching bookings");
+      console.log("Error fetching bookings", error);
     }
-  }
+  };
 
   useEffect(() => {
-    getBooking()
-  }, [])
-  
-  const myBookings = bookings
-  const favoriteIds = getFavoriteArtisans();
-  const favoriteArtisans = users.filter(u => favoriteIds.includes(u.id));
+    getBooking();
+    console.log(bookings);
+  }, []);
 
+  const favoriteIds = getFavoriteArtisans();
+  // const favoriteArtisans = users.filter(u => favoriteIds.includes(u._id));
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex justify-between">
-
           <div>
-            <h1 className="text-3xl mb-2">Welcome back, {currentUser?.name}!</h1>
+            <h1 className="text-3xl mb-2">
+              Welcome back, {currentUser?.name}!
+            </h1>
             <p className="text-gray-600">Manage your bookings and requests</p>
           </div>
-          
 
           <div className="flex md:hidden items-center gap-6">
-              <Link to="/search" className="hover:text-blue-600">Find Artisans</Link>
-              <Link to="/messages" className="hover:text-blue-600">Messages</Link>
-            </div>
+            <Link to="/search" className="hover:text-blue-600">
+              Find Artisans
+            </Link>
+            <Link to="/messages" className="hover:text-blue-600">
+              Messages
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -64,30 +73,38 @@ export const ClientDashboard = () => {
                 <p className="text-sm text-gray-600">Active Bookings</p>
                 <Calendar className="w-5 h-5 text-blue-600" />
               </div>
-              <p className="text-3xl">{myBookings.filter(b => b.status === 'pending' || b.status === 'accepted').length}</p>
+              <p className="text-3xl">
+                {
+                  bookings.filter(
+                    (b) => b.status === "pending" || b.status === "accepted",
+                  ).length
+                }
+              </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
                 <p className="text-sm text-gray-600">Completed</p>
                 <Star className="w-5 h-5 text-green-600" />
               </div>
-              <p className="text-3xl">{myBookings.filter(b => b.status === 'completed').length}</p>
+              <p className="text-3xl">
+                {bookings.filter((b) => b.status === "completed").length}
+              </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
                 <p className="text-sm text-gray-600">Favorites</p>
                 <Heart className="w-5 h-5 text-red-600" />
               </div>
-              <p className="text-3xl">{favoriteArtisans.length}</p>
+              {/* <p className="text-3xl">{favoriteArtisans.length}</p> */}
             </CardContent>
           </Card>
-          
+
           {/* <Card>
             <CardContent className="pt-6">
               <div className="flex justify-between items-start mb-2">
@@ -114,34 +131,62 @@ export const ClientDashboard = () => {
                 <CardTitle>Active Bookings</CardTitle>
               </CardHeader>
               <CardContent>
-                {myBookings.filter(b => b.status !== 'completed' && b.status !== 'cancelled').length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">No active bookings</p>
+                {bookings.filter(
+                  (b) => b.status !== "completed" && b.status !== "cancelled",
+                ).length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">
+                    No active bookings
+                  </p>
                 ) : (
                   <div className="space-y-4">
-                    {myBookings
-                      .filter(b => b.status !== 'completed' && b.status !== 'cancelled')
-                      .map(booking => {
+                    {bookings
+                      .filter(
+                        (b) =>
+                          b.status !== "completed" && b.status !== "cancelled",
+                      )
+                      .map((booking) => {
                         // const artisan = users.find(u => u.id === booking.artisanId);
                         // console.log('Booking', booking)
                         // console.log('Booking', booking._id)
                         // console.log(booking.artisan.name)
                         return (
-                          <div key={booking._id} className="border rounded-lg p-4">
+                          <div
+                            key={booking._id}
+                            className="border rounded-lg p-4"
+                          >
                             <div className="flex justify-between items-start mb-2">
                               <div>
-                                <h3 className="font-semibold">{booking.serviceType}</h3>
-                                <p className="text-sm text-gray-600">Artisan: {booking?.artisan?.name}</p>
+                                <h3 className="font-semibold">
+                                  Service Type: {booking.serviceType}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  Artisan: {booking?.artisan?.name}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Description:
+                                  {booking.description}
+                                </p>
                               </div>
                               <Badge>{booking.status}</Badge>
                             </div>
                             <div className="text-sm text-gray-600 space-y-1">
-                              <p>📅 {booking.date} at {booking.time}</p>
+                              <p>
+                                📅 {booking.date.slice(0, 10)} at {booking.time}
+                              </p>
                               <p>📍 {booking.location}</p>
                               <p>💰 {booking.budget}</p>
                             </div>
                             <div className="flex gap-2 mt-4">
                               <Button size="sm">Message Artisan</Button>
-                              <Button size="sm" variant="outline" onClick={() => navigate(`/booking-detail/${booking._id}`)}>View Details</Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  navigate(`/booking-detail/${booking._id}`)
+                                }
+                              >
+                                View Details
+                              </Button>
                             </div>
                           </div>
                         );
@@ -159,16 +204,24 @@ export const ClientDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {myBookings.map(booking => {
-                    const artisan = users.find(u => u.id === booking.artisanId);
+                  {bookings.map((booking) => {
+                    // const artisan = users.find(u => u.id === booking.artisanId);
                     return (
-                      <div key={booking.id} className="border rounded-lg p-4">
+                      <div key={booking._id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="font-semibold">{booking.serviceType}</h3>
-                            <p className="text-sm text-gray-600">Artisan: {artisan?.name}</p>
+                            <h3 className="font-semibold">
+                              {booking.serviceType}
+                            </h3>
+                            {/* <p className="text-sm text-gray-600">Artisan: {artisan?.name}</p> */}
                           </div>
-                          <Badge variant={booking.status === 'completed' ? 'default' : 'secondary'}>
+                          <Badge
+                            variant={
+                              booking.status === "completed"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
                             {booking.status}
                           </Badge>
                         </div>
@@ -176,8 +229,10 @@ export const ClientDashboard = () => {
                           <p>📅 {booking.date}</p>
                           <p>💰 {booking.budget}</p>
                         </div>
-                        {booking.status === 'completed' && (
-                          <Button size="sm" variant="outline" className="mt-4">Leave Review</Button>
+                        {booking.status === "completed" && (
+                          <Button size="sm" variant="outline" className="mt-4">
+                            Leave Review
+                          </Button>
                         )}
                       </div>
                     );
@@ -187,7 +242,7 @@ export const ClientDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="favorites">
+          {/* <TabsContent value="favorites">
             <Card>
               <CardHeader>
                 <CardTitle>Favorite Artisans</CardTitle>
@@ -217,7 +272,7 @@ export const ClientDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
 
           {/* <TabsContent value="payments">
             <Card>
@@ -251,5 +306,5 @@ export const ClientDashboard = () => {
         </Tabs>
       </div>
     </div>
-  )
-}
+  );
+};

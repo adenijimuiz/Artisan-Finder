@@ -14,12 +14,11 @@ import {
 import { usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
 
-export const ArtisanProfilePage = () => {
-  interface Artisan {
+export interface Artisan {
     _id: string;
     name: string;
     email: string;
-    role: "artisan" | "client" | "admin";
+    role: "artisan";
     phone?: string;
     avatar?: string;
     bio?: string;
@@ -33,6 +32,9 @@ export const ArtisanProfilePage = () => {
     portfolio?: string[];
     verified?: boolean;
   }
+
+export const ArtisanProfilePage = () => {
+  
   const { id } = useParams();
   const { users, reviews } = useApp();
   const [artisan, setArtisan] = useState<Artisan | null>(null);

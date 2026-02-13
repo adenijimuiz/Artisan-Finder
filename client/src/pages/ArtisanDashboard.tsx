@@ -8,8 +8,8 @@ import { DollarSign, Star, Calendar, MessageSquare, User, Image } from 'lucide-r
 export const ArtisanDashboard = () => {
   const { currentUser, bookings, reviews } = useApp();
   
-  const myBookings = bookings.filter(b => b.artisanId === currentUser?.id);
-  const myReviews = reviews.filter(r => r.artisanId === currentUser?.id);
+  const myBookings = bookings.filter(b => b.artisanId === currentUser?._id);
+  const myReviews = reviews.filter(r => r.artisanId === currentUser?._id);
   const avgRating = myReviews.length > 0 
     ? (myReviews.reduce((acc, r) => acc + r.rating, 0) / myReviews.length).toFixed(1)
     : '0.0';
@@ -86,7 +86,7 @@ export const ArtisanDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {myBookings.map(booking => (
-                      <div key={booking.id} className="border rounded-lg p-4">
+                      <div key={booking._id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold">{booking.serviceType}</h3>

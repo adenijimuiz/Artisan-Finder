@@ -149,12 +149,12 @@ function AppContent() {
     <>
       <Layout>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register/artisan" element={<ArtisanRegisterPage />} />
-          <Route path="/register/client" element={<ClientRegisterPage />} />
-          <Route path="/login/admin" element={<AdminLoginPage />} />
+          <Route path="/" element={<HomePage />} /> //✅✅✅
+          <Route path="/register/artisan" element={<ArtisanRegisterPage />} /> //✅✅✅
+          <Route path="/register/client" element={<ClientRegisterPage />} /> //✅✅✅
+          <Route path="/login/admin" element={<AdminLoginPage />} /> //❌❌❌
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/artisan/:id" element={<ArtisanProfilePage />} />
+          <Route path="/artisan/:id" element={<ArtisanProfilePage />} />//✅✅✅
           <Route path="/book/:id" element={<BookingPage />} />
           <Route path="/booking-detail/:id" element={<BookingDetailPage />} />
 

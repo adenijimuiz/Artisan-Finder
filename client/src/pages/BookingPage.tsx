@@ -13,7 +13,7 @@ export const BookingPage = () => {
   const navigate = useNavigate();
   const { users, currentUser, addBooking } = useApp();
   
-  const artisan = users.find(u => u.id === id);
+  // const artisan = users.find(u => u.id === id);
   const [formData, setFormData] = useState({
     serviceType: '',
     description: '',
@@ -29,7 +29,7 @@ export const BookingPage = () => {
     const booking = {
       id: `booking-${Date.now()}`,
       artisanId: id!,
-      clientId: currentUser?.id || 'guest',
+      clientId: currentUser?._id || 'guest',
       ...formData,
       status: 'pending' as const
     };

@@ -35,7 +35,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/';
+      // window.location.href = '/';
     }
     return Promise.reject(error.response?.data || error);
   }
@@ -105,7 +105,7 @@ export const usersAPI = {
 
   getArtisans: () => api.get('/users/artisans'), //✅✅✅
 
-  getArtisan: (id: string) => api.get(`/users/artisans/${id}`),
+  getArtisan: (id: string) => api.get(`/users/artisans/${id}`), //✅✅✅
 
   updateProfile: (data: any) => api.put('/users/profile', data),
 

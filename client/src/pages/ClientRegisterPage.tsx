@@ -65,7 +65,8 @@ export const ClientRegisterPage = () => {
                 : "/dashboard/artisan";
             navigate(rolePath);
           } else {
-            toast.error(response.data.message);
+            toast.error(response.data.message || "Login failed. Please try again.");
+            console.error("Login failed:", response.data.message);
           }
           break;
 
@@ -74,39 +75,21 @@ export const ClientRegisterPage = () => {
           console.error("Unknown CurrentState:", CurrentState);
           break;
       }
-
-      // if (CurrentState === 'Register') {
-      //   const response = await authAPI.register(formData);
-
-      //   console.log('Login response', response)
-      //   if (response.data.success) {
-      //     setCurrentUser(response.data.user);
-      //     toast.success('Registration successful! Welcome to ArtisanFinder.');
-      //     localStorage.setItem('token', response.data.token);
-      //     localStorage.setItem('user', JSON.stringify(response.data.user));
-      //     response.data.user.role === 'client' ? navigate('/dashboard/client') : navigate('/dashboard/artisan');
-      //   } else {
-      //     toast.error(response.data.message)
-      //     console.error('Registration failed:', response.data.message);
-      //   }
-      // } else {
-      //   const response = await authAPI.login(formData.email, formData.password);
-      //   console.log('Login response', response)
-      //   console.log('Login response', response.data.success)
-      //   // console.log(response.data)
-      //   if (response.data.success) {
-      //     setCurrentUser(response.data.user);
-      //     toast.success('Login successful! Welcome back.');
-      //     localStorage.setItem('token', response.data.token);
-      //     localStorage.setItem('user', JSON.stringify(response.data.user));
-      //     response.data.user.role === 'client' ? navigate('/dashboard/client') : navigate('/dashboard/artisan');
-      //   } else {
-      //     toast.error(response.data.message)
-      //   }
-      // }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during authentication:", error);
-      toast.error("An unexpected error occurred. Please try again.");
+      
+      // Handle API validation errors (success: false responses)
+      if (error.message) {
+        toast.error(error.message);
+      } 
+      // Handle axios error responses
+      else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      }
+      // Generic fallback
+      else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

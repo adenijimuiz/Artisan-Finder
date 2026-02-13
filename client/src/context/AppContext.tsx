@@ -20,21 +20,113 @@ export interface User {
   verified?: boolean;
 }
 
+// export interface Booking {
+//   _id: string;
+//   artisanId: string;
+//   clientId: string;
+//   artisan: User;
+//   serviceType: string;
+//   description: string;
+//   date: string;
+//   time: string;
+//   location: string;
+//   budget: string;
+//   specialInstructions?: string;
+//   status: 'pending' | 'accepted' | 'completed' | 'cancelled';
+//   images?: string[];
+// }
+
+
+export interface BookingImage {
+  url: string;
+  publicId: string;
+}
+
+export interface Artisan {
+  _id: string;
+  name: string;
+  email: string;
+  role: "artisan";
+  availability: string;
+  avatar: string;
+  bio: string;
+  experience: string;
+  phone: string;
+  portfolio: any[];
+  priceRange: string;
+  rating: number;
+  reviewCount: number;
+  skills: string[];
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  location: string;
+}
+
+export interface Client {
+  _id: string;
+  name: string;
+  email: string;
+  role: "client";
+  availability: string;
+  avatar: string;
+  portfolio: any[];
+  rating: number;
+  reviewCount: number;
+  skills: any[];
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  phone: string;
+  location: string;
+}
+
 export interface Booking {
   _id: string;
-  artisanId: string;
-  clientId: string;
-  artisan: User;
-  serviceType: string;
+  artisan: Artisan;
+  client: Client;
+  budget: string;
   description: string;
+  serviceType: string;
+  location: string;
+  status: 'pending' | 'accepted' | 'in-progress' | 'completed' | 'cancelled';
+  specialInstructions: string;
   date: string;
   time: string;
-  location: string;
-  budget: string;
-  specialInstructions?: string;
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
-  images?: string[];
+  images: BookingImage[];
+  createdAt: string;
+  updatedAt: string;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export interface Review {
   id: string;
@@ -178,32 +270,32 @@ export const useApp = () => {
 //   }
 // ];
 
-const mockBookings: Booking[] = [
-  {
-    id: 'b1',
-    artisanId: '1',
-    clientId: 'c1',
-    serviceType: 'Carpentry',
-    description: 'Need custom kitchen cabinets installed',
-    date: '2026-01-25',
-    time: '10:00 AM',
-    location: 'New York, NY',
-    budget: '$1500',
-    status: 'pending'
-  },
-  {
-    id: 'b2',
-    artisanId: '2',
-    clientId: 'c1',
-    serviceType: 'Plumbing',
-    description: 'Fix leaking bathroom pipes',
-    date: '2026-01-20',
-    time: '2:00 PM',
-    location: 'Los Angeles, CA',
-    budget: '$300',
-    status: 'completed'
-  }
-];
+// const mockBookings: Booking[] = [
+//   {
+//     id: 'b1',
+//     artisanId: '1',
+//     clientId: 'c1',
+//     serviceType: 'Carpentry',
+//     description: 'Need custom kitchen cabinets installed',
+//     date: '2026-01-25',
+//     time: '10:00 AM',
+//     location: 'New York, NY',
+//     budget: '$1500',
+//     status: 'pending'
+//   },
+//   {
+//     id: 'b2',
+//     artisanId: '2',
+//     clientId: 'c1',
+//     serviceType: 'Plumbing',
+//     description: 'Fix leaking bathroom pipes',
+//     date: '2026-01-20',
+//     time: '2:00 PM',
+//     location: 'Los Angeles, CA',
+//     budget: '$300',
+//     status: 'completed'
+//   }
+// ];
 
 const mockReviews: Review[] = [
   {
@@ -266,7 +358,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [artisans, setArtisans] = useState([]);
   // const [users] = useState<User[]>([...mockArtisans]);
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const [bookings, setBookings] = useState<Booking[] | []>([]);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [favorites, setFavorites] = useState<string[]>([]);

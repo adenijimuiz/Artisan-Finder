@@ -90,7 +90,7 @@ export const authAPI = {
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }), //✅✅✅
 
-  getMe: () => api.get('/auth/me'),
+  getMe: () => api.get('/auth/me'), //✅✅✅
 };
 
 // Users API
@@ -107,7 +107,7 @@ export const usersAPI = {
 
   getArtisan: (id: string) => api.get(`/users/artisans/${id}`), //✅✅✅
 
-  updateProfile: (data: any) => api.put('/users/profile', data),
+  updateProfile: (data: any) => api.put('/users/profile', data), //✅✅✅
 
   uploadAvatar: (file: File) => {
     const formData = new FormData();
@@ -115,7 +115,7 @@ export const usersAPI = {
     return api.post('/users/upload-avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-  },
+  }, //✅✅✅
 
   uploadPortfolio: (files: File[]) => {
     const formData = new FormData();
@@ -123,7 +123,7 @@ export const usersAPI = {
     return api.post('/users/upload-portfolio', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-  },
+  }, //✅✅✅
 };
 
 // Bookings API
@@ -142,7 +142,7 @@ export const bookingsAPI = {
 
   getBookings: () => api.get('/bookings'), //✅✅✅
 
-  getBooking: (id: string) => api.get(`/bookings/${id}`),
+  getBooking: (id: string) => api.get(`/bookings/${id}`), //✅✅✅
 
   updateBooking: (id: string, data: any) => api.put(`/bookings/${id}`, data),
 

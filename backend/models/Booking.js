@@ -35,9 +35,21 @@ const bookingSchema = new mongoose.Schema({
   budget: String,
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'in-progress', 'completed', 'cancelled'],
+    enum: ['pending', 'accepted', 'in-progress', 'rejected', 'completed', 'cancelled'],
     default: 'pending'
   },
+   statusHistory: [
+    {
+      status: {
+        type: String,
+        required: true
+      },
+      changedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
   images: {
     type: Array,
     default: []
@@ -56,6 +68,15 @@ const bookingSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+bookingSchema.pre('save', function(next) {
+  if (this.isModified('status')) {
+    this.statusHistory.push({
+      status: this.status,
+      changedAt: new Date()
+    });
+  }
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

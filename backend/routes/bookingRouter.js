@@ -1,5 +1,5 @@
 import express from 'express';
-import { acceptBooking, completeBooking, createBooking, getBooking, getBookings, updateBooking } from '../controllers/bookingController.js';
+import { acceptBooking, cancelBooking, completeBooking, createBooking, getBooking, getBookings, inProgressBooking, rejectBooking, updateBooking } from '../controllers/bookingController.js';
 import { protect } from '../middleware/auth.js';
 import { upload } from '../middleware/multer.js';
 
@@ -20,6 +20,15 @@ bookingRouter.put('/:id', protect, updateBooking);
 
 // Accept booking (artisan only)
 bookingRouter.patch('/:id/accept', protect, acceptBooking);//✅✅✅
+
+// Reject booking (artisan only)
+bookingRouter.patch('/:id/reject', protect, rejectBooking);
+
+// Cancel booking (client only)
+bookingRouter.patch('/:id/cancel', protect, cancelBooking);
+
+//in progress booking (both)
+bookingRouter.patch('/:id/in-progress', protect, inProgressBooking);
 
 // Complete booking (artisan only)
 bookingRouter.patch('/:id/complete', protect, completeBooking);

@@ -336,6 +336,125 @@ export const acceptBooking = async (req, res) => {
   }
 };
 
+
+export const rejectBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    if (booking.artisan.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Only the artisan can accept bookings' });
+    }
+
+    booking.status = 'rejected';
+    await booking.save();
+
+    const populatedBooking = await booking.populate(['artisan', 'client']);
+
+    // Send confirmation email to client
+    try {
+      const { sendBookingRejected } = await import('../utils/email.js');
+      await sendBookingRejected(populatedBooking, populatedBooking.client, populatedBooking.artisan);
+    } catch (emailError) {
+      console.error('Failed to send rejected email:', emailError);
+    }
+
+    // Notify client via Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`user_${booking.client}`).emit('booking_rejected', populatedBooking);
+    }
+
+    res.json({ success: true, booking: populatedBooking });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
+//both
+export const inProgressBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    // Check if the user is either the artisan OR the client
+    const isArtisan = booking.artisan.toString() === req.user._id.toString();
+    const isClient = booking.client.toString() === req.user._id.toString();
+
+    if (!isArtisan && !isClient) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'You do not have permission to update this booking' 
+      });
+    }
+
+    booking.status = 'in-progress';
+    await booking.save();
+
+    const populatedBooking = await booking.populate(['artisan', 'client']);
+
+    // Notify the OTHER party via Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      const recipientId = isArtisan ? booking.client : booking.artisan;
+      io.to(`user_${recipientId}`).emit('booking_in_progress', populatedBooking);
+    }
+
+    res.json({ success: true, booking: populatedBooking });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
+//client
+export const cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+
+    if (booking.client.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Only the client can cancel bookings' });
+    }
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    const populatedBooking = await booking.populate(['artisan', 'client']);
+
+    // Send confirmation email to client
+    try {
+      const { sendBookingCancellation } = await import('../utils/email.js');
+      await sendBookingCancellation(populatedBooking, populatedBooking.artisan, populatedBooking.client);
+    } catch (emailError) {
+      console.error('Failed to send cancellation email:', emailError);
+    }
+
+    // Notify client via Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`user_${booking.client}`).emit('booking_cancelled', populatedBooking);
+    }
+
+    res.json({ success: true, booking: populatedBooking });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 export const completeBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);

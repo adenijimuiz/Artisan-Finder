@@ -146,9 +146,15 @@ export const bookingsAPI = {
 
   updateBooking: (id: string, data: any) => api.put(`/bookings/${id}`, data),
 
-  acceptBooking: (id: string) => api.post(`/bookings/${id}/accept`),
+  acceptBooking: (id: string) => api.patch(`/bookings/${id}/accept`),  //✅✅✅
 
-  completeBooking: (id: string) => api.post(`/bookings/${id}/complete`),
+  rejectBooking: (id: string) => api.patch(`/bookings/${id}/reject`),
+
+  cancelBooking: (id: string) => api.patch(`/bookings/${id}/cancel`),
+
+  inProgressBooking: (id: string) => api.patch(`/bookings/${id}/in-progress`),
+
+  completeBooking: (id: string) => api.patch(`/bookings/${id}/complete`),
 };
 
 // Reviews API

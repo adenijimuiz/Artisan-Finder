@@ -156,6 +156,70 @@ export const sendBookingConfirmation = async (booking, client, artisan) => {
   });
 };
 
+export const sendBookingRejected = async (booking, client, artisan) => {
+  const message = `
+    Your booking request with ${artisan.name} has been declined.
+    
+    Service: ${booking.serviceType}
+    Date: ${new Date(booking.date).toLocaleDateString()}
+    Time: ${booking.time}
+    Location: ${booking.location?.address || 'Not specified'}
+    
+    Feel free to browse other artisans on our platform.
+  `;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #D32F2F; color: white; padding: 20px; text-align: center; }
+        .content { background-color: #f9f9f9; padding: 20px; margin-top: 20px; }
+        .details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #D32F2F; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #333; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Booking Declined ❌</h1>
+        </div>
+        <div class="content">
+          <p>Hello ${client.name},</p>
+          <p>We're sorry, but your booking request with <strong>${artisan.name}</strong> has been declined at this time.</p>
+          
+          <div class="details">
+            <h3>Request Details:</h3>
+            <p><strong>Service:</strong> ${booking.serviceType}</p>
+            <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> ${booking.time}</p>
+            <p><strong>Location:</strong> ${booking.location?.address || 'Not specified'}</p>
+          </div>
+          
+          <p>Don't worry! There are many other talented artisans available. You can find a new professional by visiting our marketplace.</p>
+          
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/explore" class="button">Find Another Artisan</a>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} Artisan Finder. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await sendEmail({
+    email: client.email,
+    subject: 'Update on your Booking Request - Artisan Finder',
+    message,
+    html
+  });
+};
+
+
 export const sendBookingCancellation = async (booking, recipient, cancelledBy) => {
   const message = `
     Booking Cancelled

@@ -327,7 +327,6 @@ export const ArtisanDashboard = () => {
                           <p>📍 {booking.location}</p>
                           <p>💰 Budget: {booking.budget}</p>
                         </div>
-                        {booking.status === "pending" && (
                           <div className="mt-4">
                             <Button
                               size="lg"
@@ -344,7 +343,6 @@ export const ArtisanDashboard = () => {
                               <Button size="sm" variant="outline">Decline</Button>
                             </div> */}
                           </div>
-                        )}
                       </div>
                     ))}
                   </div>

@@ -12,6 +12,11 @@ import {
   Image,
   Loader2,
   Plus,
+  Verified,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 import { authAPI, bookingsAPI, usersAPI } from "@/services/api";
 import { toast } from "react-toastify";
@@ -224,11 +229,52 @@ export const ArtisanDashboard = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "accepted":
+        return "bg-green-200 text-emerald-900";
+      case "completed":
+        return "bg-green-400 text-green-900";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      case "rejected":
+        return "bg-red-500";
+      case "in-progress":
+        return "bg-purple-400 text-purple-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <AlertCircle className="w-4 h-4" />;
+      case "accepted":
+        return <CheckCircle className="w-4 h-4" />;
+      case "completed":
+        return <CheckCircle className="w-4 h-4" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4" />;
+      case "rejected":
+        return <XCircle className="w-4 h-4" />;
+      case "in-progress":
+        return <Clock className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl mb-2">Welcome back, {currentUser?.name}!</h1>
+          <h1 className="text-3xl mb-2">
+            Welcome back, {currentUser?.name}!{" "}
+            {currentUser?.verified && <Verified className="inline" />}
+          </h1>
           <p className="text-gray-600">Manage your artisan business</p>
         </div>
 
@@ -310,15 +356,16 @@ export const ArtisanDashboard = () => {
                               {booking.description}
                             </p>
                           </div>
-                          <Badge
-                            variant={
-                              booking.status === "pending"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {booking.status}
-                          </Badge>
+                          <div className="flex items-center justify-between">
+                            <div
+                              className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${getStatusColor(booking.status)}`}
+                            >
+                              {getStatusIcon(booking.status)}
+                              <span className="capitalize font-semibold">
+                                {booking.status}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <div className="text-sm text-gray-600 space-y-1">
                           <p>
@@ -327,22 +374,22 @@ export const ArtisanDashboard = () => {
                           <p>📍 {booking.location}</p>
                           <p>💰 Budget: {booking.budget}</p>
                         </div>
-                          <div className="mt-4">
-                            <Button
-                              size="lg"
-                              variant="outline"
-                              onClick={() =>
-                                navigate(`/booking-detail/${booking._id}`)
-                              }
-                            >
-                              View Details
-                            </Button>
+                        <div className="mt-4">
+                          <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() =>
+                              navigate(`/booking-detail/${booking._id}`)
+                            }
+                          >
+                            View Details
+                          </Button>
 
-                            {/* <div className="flex gap-2 mt-4">
+                          {/* <div className="flex gap-2 mt-4">
                               <Button size="sm">Accept</Button>
                               <Button size="sm" variant="outline">Decline</Button>
                             </div> */}
-                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

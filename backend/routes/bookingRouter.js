@@ -22,15 +22,15 @@ bookingRouter.put('/:id', protect, updateBooking);
 bookingRouter.patch('/:id/accept', protect, acceptBooking);//✅✅✅
 
 // Reject booking (artisan only)
-bookingRouter.patch('/:id/reject', protect, rejectBooking);
+bookingRouter.patch('/:id/reject', protect, rejectBooking);//✅✅✅
 
 // Cancel booking (client only)
-bookingRouter.patch('/:id/cancel', protect, cancelBooking);
+bookingRouter.patch('/:id/cancel', protect, cancelBooking);//✅✅✅
 
 //in progress booking (both)
-bookingRouter.patch('/:id/in-progress', protect, inProgressBooking);
+bookingRouter.patch('/:id/in-progress', protect, inProgressBooking);//✅✅✅
 
 // Complete booking (artisan only)
-bookingRouter.patch('/:id/complete', protect, completeBooking);
+bookingRouter.patch('/:id/complete', protect, completeBooking);//✅✅✅
 
 export default bookingRouter;

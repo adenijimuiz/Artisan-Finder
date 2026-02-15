@@ -29,8 +29,12 @@ const BookingDetailPage = () => {
       const response = await bookingsAPI.getBooking(bookingId);
       if (response.data.success) {
         setBooking(response.data.booking);
+        console.log(response.data.booking)
       } else {
-        console.error("Failed to fetch booking details:", response.data.message);
+        console.error(
+          "Failed to fetch booking details:",
+          response.data.message,
+        );
       }
     } catch (error) {
       console.error("Error fetching booking details:", error);
@@ -68,36 +72,36 @@ const BookingDetailPage = () => {
       case "accepted":
         return "bg-green-200 text-emerald-900";
       case "completed":
-        return "bg-green-100 text-green-800";
+        return "bg-green-400 text-green-900";
       case "cancelled":
         return "bg-red-100 text-red-800";
+        case "rejected":
+        return "bg-red-500";
       case "in-progress":
-        return "bg-purple-100 text-purple-800";
+        return "bg-purple-400 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getActivityColor = (status: string) => {
-
-switch (status) {
-      case "pending":
-        return "bg-yellow-100";
-      case "accepted":
-        return "bg-green-200";
-      case "completed":
-        return "bg-emerald-950";
-      case "cancelled":
-        return "bg-red-500";
-        case "rejected":
-        return "bg-red-500";
-      case "in-progress":
-        return "bg-purple-100";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-
-  }
+  // const getActivityColor = (status: string) => {
+  //   switch (status) {
+  //     case "pending":
+  //       return "bg-yellow-100";
+  //     case "accepted":
+  //       return "bg-green-200";
+  //     case "completed":
+  //       return "bg-emerald-950";
+  //     case "cancelled":
+  //       return "bg-red-500";
+  //     case "rejected":
+  //       return "bg-red-500";
+  //     case "in-progress":
+  //       return "bg-purple-100";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -108,6 +112,8 @@ switch (status) {
       case "completed":
         return <CheckCircle className="w-4 h-4" />;
       case "cancelled":
+        return <XCircle className="w-4 h-4" />;
+      case "rejected":
         return <XCircle className="w-4 h-4" />;
       case "in-progress":
         return <Clock className="w-4 h-4" />;
@@ -157,17 +163,17 @@ switch (status) {
   };
 
   const startBooking = async () => {
-  try {
-    const response = await bookingsAPI.inProgressBooking(booking._id); // Assumes this endpoint exists
-    if (response.data.success) {
-      setBooking(response.data.booking);
-    } else {
-      console.error("Failed to start booking:", response.data.message);
+    try {
+      const response = await bookingsAPI.inProgressBooking(booking._id); // Assumes this endpoint exists
+      if (response.data.success) {
+        setBooking(response.data.booking);
+      } else {
+        console.error("Failed to start booking:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error starting booking:", error);
     }
-  } catch (error) {
-    console.error("Error starting booking:", error);
-  }
-};
+  };
 
   const completeBooking = async () => {
     try {
@@ -361,7 +367,11 @@ switch (status) {
             )}
 
             {isClient &&
-              booking.status !== "completed" && booking.status !== 'accepted' && booking.status !== "cancelled" && booking.status !== "in-progress" && (
+              booking.status !== "completed" &&
+              booking.status !== "accepted" &&
+              booking.status !== "cancelled" &&
+              booking.status !== "in-progress" &&
+              booking.status !== "rejected" && (
                 <Card className="bg-red-50 border-red-200">
                   <CardContent className="pt-6">
                     <Button
@@ -376,19 +386,19 @@ switch (status) {
                 </Card>
               )}
 
-              {booking.status === "accepted" && (
-  <Card className="bg-blue-50 border-blue-200">
-    <CardContent className="pt-6">
-      <Button
-        onClick={startBooking}
-        className="w-full bg-blue-600 hover:bg-blue-700"
-      >
-        <Clock className="w-4 h-4 mr-2" />
-        Start Work (In Progress)
-      </Button>
-    </CardContent>
-  </Card>
-)}
+            {booking.status === "accepted" && (
+              <Card className="bg-blue-50 border-blue-200">
+                <CardContent className="pt-6">
+                  <Button
+                    onClick={startBooking}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Clock className="w-4 h-4 mr-2" />
+                    Start Work (In Progress)
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Artisan can also complete a booking (if in-progress or accepted) */}
             {isArtisan && booking.status === "in-progress" && (
@@ -415,9 +425,14 @@ switch (status) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+
+                  {
+                    booking.artisan.avatar ? 
+                      <div className="w-16 h-16 rounded-full overflow-hidden">
+                        <img src={booking.artisan.avatar} alt={`${booking.artisan.name}'s avatar`} className="w-full h-full object-cover" /> </div>: <div className="w-16 h-16 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
                     {getInitials(booking.artisan.name)}
                   </div>
+                  }
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900">
                       {booking.artisan.name}
@@ -463,7 +478,9 @@ switch (status) {
                   {booking.artisan.experience && (
                     <div>
                       <span className="text-sm text-gray-600">Experience</span>
-                      <p className="font-medium">{booking.artisan.experience}</p>
+                      <p className="font-medium">
+                        {booking.artisan.experience}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -514,12 +531,12 @@ switch (status) {
 
             {/* Timeline / Activity */}
             <Card>
-  <CardHeader>
-    <CardTitle>Activity</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="space-y-4">
-      <div className="flex gap-4">
+              <CardHeader>
+                <CardTitle>Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
                       <div className="w-0.5 h-12 bg-gray-200"></div>
@@ -527,79 +544,95 @@ switch (status) {
                     <div>
                       <p className="text-sm font-semibold">Booking Created</p>
                       <p className="text-xs text-gray-600">
-                        {new Date(booking.createdAt).toLocaleDateString() || "Today"}
+                        {new Date(booking.createdAt).toLocaleDateString() ||
+                          "Today"}
                       </p>
                     </div>
                   </div>
-      {booking.statusHistory && booking.statusHistory.length > 0 ? (
-        // Sort history by timestamp (oldest first)
-        [...booking.statusHistory]
-          .sort((a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime())
-          .map((entry, index) => {
-            return (
-              <div key={index} className="flex gap-4">
-                <div className="flex flex-col items-center">
+                  {booking.statusHistory && booking.statusHistory.length > 0 ? (
+                    // Sort history by timestamp (oldest first)
+                    [...booking.statusHistory]
+                      .sort(
+                        (a, b) =>
+                          new Date(a.changedAt).getTime() -
+                          new Date(b.changedAt).getTime(),
+                      )
+                      .map((entry, index) => {
+                        return (
+                          <div key={index} className="flex gap-4">
+                            <div className="flex flex-col items-center">
+                              <div className="flex flex-col items-center">
+                                <div
+                                  className={`w-3 h-3 ${getStatusColor(entry.status)} rounded-full`}
+                                ></div>
+                                <div className="w-0.5 h-12 bg-gray-200"></div>
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold capitalize">
+                                {entry.status}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {new Date(entry.changedAt).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    // Fallback to simple timeline if no history
+                    <>
+                      <div className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                          <div className="w-0.5 h-12 bg-gray-200"></div>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold">
+                            Booking Created
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {new Date(booking.createdAt).toLocaleDateString() ||
+                              "Today"}
+                          </p>
+                        </div>
+                      </div>
 
-                  <div className="flex flex-col items-center">
-                      <div className={`w-3 h-3 ${getActivityColor(entry.status)} rounded-full`}></div>
-                      <div className="w-0.5 h-12 bg-gray-200"></div>
-                    </div>
+                      {booking.status !== "pending" && (
+                        <div className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div
+                              className={`w-3 h-3 rounded-full ${getStatusColor(booking.status).split(" ")[0]}`}
+                            />
+                            {booking.status !== "completed" && (
+                              <div className="w-0.5 h-12 bg-gray-200"></div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold capitalize">
+                              {booking.status === "accepted"
+                                ? "Accepted"
+                                : booking.status === "in-progress"
+                                  ? "In Progress"
+                                  : booking.status === "completed"
+                                    ? "Completed"
+                                    : "Updated"}
+                            </p>
+                            <p className="text-xs text-gray-600">
+                              {booking.updatedAt
+                                ? new Date(
+                                    booking.updatedAt,
+                                  ).toLocaleDateString()
+                                : "Recently"}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
-                <div>
-                  <p className="text-sm font-semibold capitalize">{entry.status}</p>
-                  <p className="text-xs text-gray-600">
-                    {new Date(entry.changedAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            );
-          })
-      ) : (
-        // Fallback to simple timeline if no history
-        <>
-          <div className="flex gap-4">
-            
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-              <div className="w-0.5 h-12 bg-gray-200"></div>
-            </div>
-            <div>
-              <p className="text-sm font-semibold">Booking Created</p>
-              <p className="text-xs text-gray-600">
-                {new Date(booking.createdAt).toLocaleDateString() || "Today"}
-              </p>
-            </div>
-          </div>
-
-          {booking.status !== "pending" && (
-            <div className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className={`w-3 h-3 rounded-full ${getStatusColor(booking.status).split(' ')[0]}`} />
-                {booking.status !== "completed" && <div className="w-0.5 h-12 bg-gray-200"></div>}
-              </div>
-              <div>
-                <p className="text-sm font-semibold capitalize">
-                  {booking.status === "accepted"
-                    ? "Accepted"
-                    : booking.status === "in-progress"
-                    ? "In Progress"
-                    : booking.status === "completed"
-                    ? "Completed"
-                    : "Updated"}
-                </p>
-                <p className="text-xs text-gray-600">
-                  {booking.updatedAt
-                    ? new Date(booking.updatedAt).toLocaleDateString()
-                    : "Recently"}
-                </p>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  </CardContent>
-</Card>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

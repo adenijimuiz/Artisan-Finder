@@ -20,22 +20,6 @@ export interface User {
   verified?: boolean;
 }
 
-// export interface Booking {
-//   _id: string;
-//   artisanId: string;
-//   clientId: string;
-//   artisan: User;
-//   serviceType: string;
-//   description: string;
-//   date: string;
-//   time: string;
-//   location: string;
-//   budget: string;
-//   specialInstructions?: string;
-//   status: 'pending' | 'accepted' | 'completed' | 'cancelled';
-//   images?: string[];
-// }
-
 
 export interface BookingImage {
   url: string;
@@ -275,9 +259,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
    useEffect(() => {
      const token = localStorage.getItem('token');
-     console.log('AppContext token', token)
      const user = localStorage.getItem('user');
-      console.log('AppContext user', user)
      if (token && user) {
        setCurrentUser(JSON.parse(user));
        if (JSON.parse(user)?.role == 'client') {

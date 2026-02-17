@@ -42,8 +42,6 @@ export const ArtisanProfilePage = () => {
   const getArtisan = async (params: string) => {
     try {
       const response = await usersAPI.getArtisan(params);
-      console.log("Fetched artisan:", response.data.artisan);
-      console.log("Fetched artisan:", response.data.artisan.avatar);
       setArtisan(response.data.artisan);
     } catch (error) {
       console.error("Error fetching artisan:", error);

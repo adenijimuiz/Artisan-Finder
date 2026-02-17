@@ -200,7 +200,7 @@ export const createBooking = async (req, res) => {
 
     // Send email notification to artisan
     try {
-      await sendBookingNotification(populatedBooking, populatedBooking.artisan, populatedBooking.client);
+      sendBookingNotification(populatedBooking, populatedBooking.artisan, populatedBooking.client);
     } catch (emailError) {
       console.error('Failed to send email notification:', emailError);
       // Don't fail the entire request if email fails

@@ -9,9 +9,9 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 // Axios instance
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 });
 
 // Request interceptor to add auth token
@@ -128,17 +128,10 @@ export const usersAPI = {
 
 // Bookings API
 export const bookingsAPI = {
-  createBooking: (data: {
-    artisanId: string;
-    serviceType: string;
-    description: string;
-    date: string;
-    time: string;
-    location: string;
-    budget: string;
-    specialInstructions?: string;
-    images?: string[];
-  }) => api.post('/bookings', data),
+  createBooking: (data: FormData) =>
+  api.post("/bookings", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }), //✅✅✅
 
   getBookings: () => api.get('/bookings'), //✅✅✅
 
@@ -148,13 +141,13 @@ export const bookingsAPI = {
 
   acceptBooking: (id: string) => api.patch(`/bookings/${id}/accept`),  //✅✅✅
 
-  rejectBooking: (id: string) => api.patch(`/bookings/${id}/reject`),
+  rejectBooking: (id: string) => api.patch(`/bookings/${id}/reject`), //✅✅✅
 
-  cancelBooking: (id: string) => api.patch(`/bookings/${id}/cancel`),
+  cancelBooking: (id: string) => api.patch(`/bookings/${id}/cancel`), //✅✅✅
 
-  inProgressBooking: (id: string) => api.patch(`/bookings/${id}/in-progress`),
+  inProgressBooking: (id: string) => api.patch(`/bookings/${id}/in-progress`), //✅✅✅
 
-  completeBooking: (id: string) => api.patch(`/bookings/${id}/complete`),
+  completeBooking: (id: string) => api.patch(`/bookings/${id}/complete`), //✅✅✅
 };
 
 // Reviews API

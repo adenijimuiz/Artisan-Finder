@@ -1,12 +1,25 @@
-import { useApp } from "@/context/AppContext";
+import { useApp, type Booking } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Calendar, Star, CreditCard, AlertCircle, CheckCircle, XCircle, Clock } from "lucide-react";
+import {
+  Heart,
+  Calendar,
+  Star,
+  CreditCard,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Rating } from "@/components/ui/rating";
 import { Link } from "react-router-dom";
-import { use, useEffect } from "react";
-import { bookingsAPI } from "@/services/api";
+import { useEffect, useState } from "react";
+import { bookingsAPI, reviewsAPI } from "@/services/api";
 import { toast } from "react-toastify";
 
 export const ClientDashboard = () => {
@@ -18,6 +31,54 @@ export const ClientDashboard = () => {
     getFavoriteArtisans,
     navigate,
   } = useApp();
+
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+const [selectedBookingForReview, setSelectedBookingForReview] = useState<Booking | null>(null);
+const [reviewRating, setReviewRating] = useState(0);
+const [reviewComment, setReviewComment] = useState("");
+const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+const handleLeaveReview = (booking: Booking) => {
+  setSelectedBookingForReview(booking);
+  setReviewRating(0);
+  setReviewComment("");
+  setIsReviewModalOpen(true);
+};
+
+
+
+const submitReview = async () => {
+  if (!selectedBookingForReview) return;
+  if (reviewRating === 0) {
+    toast.error("Please select a rating");
+    return;
+  }
+
+  setIsSubmittingReview(true);
+  try {
+    // Assuming you have a reviewsAPI with createReview method
+    const response = await reviewsAPI.createReview({
+      bookingId: selectedBookingForReview._id,
+      artisanId: selectedBookingForReview.artisan?._id,
+      rating: reviewRating,
+      comment: reviewComment,
+    });
+
+    if (response.data.success) {
+      toast.success("Review submitted successfully!");
+      setIsReviewModalOpen(false);
+      // Optionally refresh bookings or update state
+    } else {
+      toast.error(response.data.message || "Failed to submit review");
+    }
+  } catch (error) {
+    toast.error("Error submitting review");
+    console.error(error);
+  } finally {
+    setIsSubmittingReview(false);
+  }
+};
+
 
   const getBooking = async () => {
     try {
@@ -36,44 +97,43 @@ export const ClientDashboard = () => {
     }
   };
 
-  
-    const getStatusColor = (status: string) => {
-      switch (status) {
-        case "pending":
-          return "bg-yellow-100 text-yellow-800";
-        case "accepted":
-          return "bg-green-200 text-emerald-900";
-        case "completed":
-          return "bg-green-400 text-green-900";
-        case "cancelled":
-          return "bg-red-100 text-red-800";
-        case "rejected":
-          return "bg-red-500";
-        case "in-progress":
-          return "bg-purple-400 text-purple-800";
-        default:
-          return "bg-gray-100 text-gray-800";
-      }
-    };
-  
-    const getStatusIcon = (status: string) => {
-      switch (status) {
-        case "pending":
-          return <AlertCircle className="w-4 h-4" />;
-        case "accepted":
-          return <CheckCircle className="w-4 h-4" />;
-        case "completed":
-          return <CheckCircle className="w-4 h-4" />;
-        case "cancelled":
-          return <XCircle className="w-4 h-4" />;
-        case "rejected":
-          return <XCircle className="w-4 h-4" />;
-        case "in-progress":
-          return <Clock className="w-4 h-4" />;
-        default:
-          return null;
-      }
-    };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "accepted":
+        return "bg-green-200 text-emerald-900";
+      case "completed":
+        return "bg-green-400 text-green-900";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      case "rejected":
+        return "bg-red-500";
+      case "in-progress":
+        return "bg-purple-400 text-purple-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <AlertCircle className="w-4 h-4" />;
+      case "accepted":
+        return <CheckCircle className="w-4 h-4" />;
+      case "completed":
+        return <CheckCircle className="w-4 h-4" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4" />;
+      case "rejected":
+        return <XCircle className="w-4 h-4" />;
+      case "in-progress":
+        return <Clock className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
 
   useEffect(() => {
     getBooking();
@@ -202,21 +262,21 @@ export const ClientDashboard = () => {
                                   Artisan: {booking?.artisan?.name}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Description:
+                                  Description:
                                   {booking.description}
                                 </p>
                               </div>
 
                               <div className="flex items-center justify-between">
-                            <div
-                              className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${getStatusColor(booking.status)}`}
-                            >
-                              {getStatusIcon(booking.status)}
-                              <span className="capitalize font-semibold">
-                                {booking.status}
-                              </span>
-                            </div>
-                          </div>
+                                <div
+                                  className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${getStatusColor(booking.status)}`}
+                                >
+                                  {getStatusIcon(booking.status)}
+                                  <span className="capitalize font-semibold">
+                                    {booking.status}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                             <div className="text-sm text-gray-600 space-y-1">
                               <p>
@@ -265,7 +325,7 @@ export const ClientDashboard = () => {
                             {/* <p className="text-sm text-gray-600">Artisan: {artisan?.name}</p> */}
                           </div>
 
-<div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between">
                             <div
                               className={`flex items-center gap-2 px-4 py-2 rounded-lg  ${getStatusColor(booking.status)}`}
                             >
@@ -280,11 +340,18 @@ export const ClientDashboard = () => {
                           <p>📅 {booking.date}</p>
                           <p>💰 {booking.budget}</p>
                         </div>
+                        
+
                         {booking.status === "completed" && (
-                          <Button size="sm" variant="outline" className="mt-4">
-                            Leave Review
-                          </Button>
-                        )}
+  <Button
+    size="sm"
+    variant="outline"
+    className="mt-4"
+    onClick={() => handleLeaveReview(booking)}
+  >
+    Leave Review
+  </Button>
+)}
                       </div>
                     );
                   })}
@@ -292,6 +359,53 @@ export const ClientDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Leave a Review</DialogTitle>
+      <DialogDescription>
+        Share your experience with {selectedBookingForReview?.artisan?.name} for the {selectedBookingForReview?.serviceType} service.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="space-y-4 py-4">
+      <div className="space-y-2">
+        <Label>Rating</Label>
+        {/* You can implement star rating manually or use a library */}
+        <div className="flex gap-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              onClick={() => setReviewRating(star)}
+              className={`text-2xl ${star <= reviewRating ? 'text-yellow-400' : 'text-gray-300'}`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="comment">Comment (optional)</Label>
+        <Textarea
+          id="comment"
+          placeholder="Tell us about your experience..."
+          value={reviewComment}
+          onChange={(e) => setReviewComment(e.target.value)}
+          rows={4}
+        />
+      </div>
+    </div>
+    <div className="flex justify-end gap-2">
+      <Button variant="outline" onClick={() => setIsReviewModalOpen(false)}>
+        Cancel
+      </Button>
+      <Button onClick={submitReview} disabled={isSubmittingReview}>
+        {isSubmittingReview ? "Submitting..." : "Submit Review"}
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
 
           {/* <TabsContent value="favorites">
             <Card>

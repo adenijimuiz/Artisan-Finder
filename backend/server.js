@@ -11,6 +11,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import authRouter from './routes/authRouter.js';
 import userRouter from './routes/userRouter.js';
 import bookingRouter from './routes/bookingRouter.js';
+import reviewRouter from './routes/reviewRouter.js';
 
 
 
@@ -62,8 +63,8 @@ app.set('io', io);
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/bookings', bookingRouter)
+app.use('/api/reviews', reviewRouter);
 
-// app.use('/api/reviews', reviewRoutes);
 // app.use('/api/messages', messageRoutes);
 // app.use('/api/payments', paymentRoutes);
 // app.use('/api/admin', adminRoutes);

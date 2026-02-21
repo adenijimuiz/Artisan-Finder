@@ -59,6 +59,9 @@ export const ArtisanRegisterPage = () => {
       console.log("Registration response", response.data);
       if (response.data.success) {
         setCurrentUser(response.data.user);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        toast.success("Registration successful! Welcome aboard.");
         navigate("/dashboard/artisan");
       } else {
         toast.error(

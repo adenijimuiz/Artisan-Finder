@@ -11,7 +11,7 @@ import {
   Calendar,
   MessageSquare
 } from "lucide-react";
-import { usersAPI } from "@/services/api";
+import { reviewsAPI, usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
 
 export interface Artisan {
@@ -36,8 +36,10 @@ export interface Artisan {
 export const ArtisanProfilePage = () => {
   
   const { id } = useParams();
-  const { users, reviews } = useApp();
+  const { users } = useApp();
   const [artisan, setArtisan] = useState<Artisan | null>(null);
+  const [reviews, setReviews] = useState<any[]>([]);
+const [loadingReviews, setLoadingReviews] = useState(false);
 
   const getArtisan = async (params: string) => {
     try {
@@ -48,9 +50,23 @@ export const ArtisanProfilePage = () => {
     }
   };
 
+  const fetchReviews = async (artisanId: string) => {
+  try {
+    setLoadingReviews(true);
+    const response = await reviewsAPI.getArtisanReviews(artisanId);
+    setReviews(response.data.reviews);
+    console.log("Fetched reviews:", response.data.reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+  } finally {
+    setLoadingReviews(false);
+  }
+};
+
   useEffect(() => {
     if (id) {
       getArtisan(id);
+      fetchReviews(id);
     }
   }, [id]);
 
@@ -182,6 +198,54 @@ export const ArtisanProfilePage = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              <TabsContent value="reviews">
+  <Card>
+    <CardContent className="p-6">
+      <h3 className="text-xl mb-4">
+        Reviews ({reviews.length})
+      </h3>
+      {loadingReviews ? (
+        <p>Loading reviews...</p>
+      ) : reviews.length === 0 ? (
+        <p className="text-gray-500">No reviews yet.</p>
+      ) : (
+        <div className="space-y-6">
+          {reviews.map((review) => (
+            <div key={review._id} className="border-b pb-4 last:border-0">
+              <div className="flex items-center gap-2 mb-2">
+                {/* Client avatar/name */}
+                <div className="flex items-center gap-2">
+                  {review.client?.avatar && (
+                    <img
+                      src={review.client.avatar}
+                      alt={review.client.name}
+                      className="w-6 h-6 rounded-full"
+                    />
+                  )}
+                  <span className="font-medium">{review.client?.name || "Anonymous"}</span>
+                </div>
+                {/* Rating stars */}
+                <div className="flex ml-auto">
+                  {Array.from({ length: review.rating }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="text-gray-700 mb-1">{review.comment}</p>
+              <p className="text-sm text-gray-500">
+                {new Date(review.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </CardContent>
+  </Card>
+</TabsContent>
 
               {/* <TabsContent value="reviews">
                 <Card>

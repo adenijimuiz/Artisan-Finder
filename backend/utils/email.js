@@ -68,7 +68,7 @@ export const sendBookingNotification = async (booking, artisan, client) => {
             <p><strong>Service:</strong> ${booking.serviceType}</p>
             <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
             <p><strong>Time:</strong> ${booking.time}</p>
-            <p><strong>Location:</strong> ${booking.location?.address || 'Not specified'}</p>
+            <p><strong>Location:</strong> ${booking.location || 'Not specified'}</p>
             <p><strong>Budget:</strong> ${booking.budget ? `₦${booking.budget}` : 'Not specified'}</p>
             ${booking.description ? `<p><strong>Description:</strong> ${booking.description}</p>` : ''}
           </div>
@@ -98,7 +98,7 @@ export const sendBookingConfirmation = async (booking, client, artisan) => {
     Service: ${booking.serviceType}
     Date: ${new Date(booking.date).toLocaleDateString()}
     Time: ${booking.time}
-    Location: ${booking.location?.address || 'Not specified'}
+    Location: ${booking.location || 'Not specified'}
     
     The artisan will contact you soon.
   `;
@@ -131,7 +131,7 @@ export const sendBookingConfirmation = async (booking, client, artisan) => {
             <p><strong>Service:</strong> ${booking.serviceType}</p>
             <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
             <p><strong>Time:</strong> ${booking.time}</p>
-            <p><strong>Location:</strong> ${booking.location?.address || 'Not specified'}</p>
+            <p><strong>Location:</strong> ${booking.location || 'Not specified'}</p>
             <p><strong>Artisan:</strong> ${artisan.name}</p>
             ${artisan.email ? `<p><strong>Contact:</strong> ${artisan.email}</p>` : ''}
           </div>
@@ -163,7 +163,7 @@ export const sendBookingRejected = async (booking, client, artisan) => {
     Service: ${booking.serviceType}
     Date: ${new Date(booking.date).toLocaleDateString()}
     Time: ${booking.time}
-    Location: ${booking.location?.address || 'Not specified'}
+    Location: ${booking.location || 'Not specified'}
     
     Feel free to browse other artisans on our platform.
   `;
@@ -196,7 +196,7 @@ export const sendBookingRejected = async (booking, client, artisan) => {
             <p><strong>Service:</strong> ${booking.serviceType}</p>
             <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
             <p><strong>Time:</strong> ${booking.time}</p>
-            <p><strong>Location:</strong> ${booking.location?.address || 'Not specified'}</p>
+            <p><strong>Location:</strong> ${booking.location || 'Not specified'}</p>
           </div>
           
           <p>Don't worry! There are many other talented artisans available. You can find a new professional by visiting our marketplace.</p>
@@ -227,7 +227,7 @@ export const sendBookingCancellation = async (booking, recipient, cancelledBy) =
     Your booking for ${booking.serviceType} has been cancelled by ${cancelledBy.name}.
     
     Date: ${new Date(booking.date).toLocaleDateString()}
-    Location: ${booking.location?.address || 'Not specified'}
+    Location: ${booking.location || 'Not specified'}
     
     If you have any questions, please contact support.
   `;
@@ -259,7 +259,7 @@ export const sendBookingCancellation = async (booking, recipient, cancelledBy) =
             <h3>Booking Details:</h3>
             <p><strong>Service:</strong> ${booking.serviceType}</p>
             <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
-            <p><strong>Location:</strong> ${booking.location?.address || 'Not specified'}</p>
+            <p><strong>Location:</strong> ${booking.location || 'Not specified'}</p>
           </div>
           
           <p>If you have any questions, please contact our support team.</p>

@@ -536,7 +536,7 @@ const BookingDetailPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex gap-4">
+                  {/* <div className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
                       <div className="w-0.5 h-12 bg-gray-200"></div>
@@ -548,7 +548,7 @@ const BookingDetailPage = () => {
                           "Today"}
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                   {booking.statusHistory && booking.statusHistory.length > 0 ? (
                     // Sort history by timestamp (oldest first)
                     [...booking.statusHistory]

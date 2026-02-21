@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApp } from "@/context/AppContext";
-import { authAPI } from "../services/api";
 import { toast } from "react-toastify";
+import { authAPI } from "@/services/api";
 
 export const ClientRegisterPage = () => {
   const navigate = useNavigate();

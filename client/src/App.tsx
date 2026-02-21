@@ -18,7 +18,8 @@ import { AdminLoginPage } from '@/pages/AdminLoginPage';
 import NotFound from '@/pages/NotFound';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BookingDetailPage from './pages/BookingDetailPage';
+import BookingDetailPage from '@/pages/BookingDetailPage';
+
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -162,7 +163,7 @@ function AppContent() {
             path="/dashboard/artisan"
             element={
               <ProtectedRoute requiredRole="artisan">
-                <ArtisanDashboard />
+                <ArtisanDashboard /> //✅✅✅
               </ProtectedRoute>
             }
           />
@@ -170,7 +171,7 @@ function AppContent() {
             path="/dashboard/client"
             element={
               <ProtectedRoute requiredRole="client">
-                <ClientDashboard />
+                <ClientDashboard /> //✅✅✅
               </ProtectedRoute>
             }
           />

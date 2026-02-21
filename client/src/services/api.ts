@@ -157,10 +157,10 @@ export const reviewsAPI = {
     bookingId: string;
     rating: number;
     comment: string;
-  }) => api.post('/reviews', data),
+  }) => api.post('/reviews', data),  //✅✅✅
 
   getArtisanReviews: (artisanId: string) =>
-    api.get(`/reviews/artisan/${artisanId}`),
+    api.get(`/reviews/artisan/${artisanId}`),  //✅✅✅
 };
 
 // Messages API

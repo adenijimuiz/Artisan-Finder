@@ -1,5 +1,4 @@
 import { useParams, Link } from "react-router-dom";
-import { useApp } from "@/context/AppContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,37 +8,37 @@ import {
   MapPin,
   Award,
   Calendar,
-  MessageSquare
+  MessageSquare,
+  Quote,
 } from "lucide-react";
 import { reviewsAPI, usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
+import type { Artisan } from "@/context/AppContext";
 
-export interface Artisan {
-    _id: string;
-    name: string;
-    email: string;
-    role: "artisan";
-    phone?: string;
-    avatar?: string;
-    bio?: string;
-    skills?: string[];
-    experience?: string;
-    location?: string;
-    rating?: number;
-    reviewCount?: number;
-    priceRange?: string;
-    availability?: string;
-    portfolio?: string[];
-    verified?: boolean;
-  }
+// export interface Artisan {
+//   _id: string;
+//   name: string;
+//   email: string;
+//   role: "artisan";
+//   phone?: string;
+//   avatar?: string;
+//   bio?: string;
+//   skills?: string[];
+//   experience?: string;
+//   location?: string;
+//   rating?: number;
+//   reviewCount?: number;
+//   priceRange?: string;
+//   availability?: string;
+//   portfolio?: string[];
+//   verified?: boolean;
+// }
 
 export const ArtisanProfilePage = () => {
-  
   const { id } = useParams();
-  const { users } = useApp();
   const [artisan, setArtisan] = useState<Artisan | null>(null);
   const [reviews, setReviews] = useState<any[]>([]);
-const [loadingReviews, setLoadingReviews] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   const getArtisan = async (params: string) => {
     try {
@@ -51,17 +50,17 @@ const [loadingReviews, setLoadingReviews] = useState(false);
   };
 
   const fetchReviews = async (artisanId: string) => {
-  try {
-    setLoadingReviews(true);
-    const response = await reviewsAPI.getArtisanReviews(artisanId);
-    setReviews(response.data.reviews);
-    console.log("Fetched reviews:", response.data.reviews);
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-  } finally {
-    setLoadingReviews(false);
-  }
-};
+    try {
+      setLoadingReviews(true);
+      const response = await reviewsAPI.getArtisanReviews(artisanId);
+      setReviews(response.data.reviews);
+      console.log("Fetched reviews:", response.data.reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -200,83 +199,97 @@ const [loadingReviews, setLoadingReviews] = useState(false);
               </TabsContent>
 
               <TabsContent value="reviews">
-  <Card>
-    <CardContent className="p-6">
-      <h3 className="text-xl mb-4">
-        Reviews ({reviews.length})
-      </h3>
-      {loadingReviews ? (
-        <p>Loading reviews...</p>
-      ) : reviews.length === 0 ? (
-        <p className="text-gray-500">No reviews yet.</p>
-      ) : (
-        <div className="space-y-6">
-          {reviews.map((review) => (
-            <div key={review._id} className="border-b pb-4 last:border-0">
-              <div className="flex items-center gap-2 mb-2">
-                {/* Client avatar/name */}
-                <div className="flex items-center gap-2">
-                  {review.client?.avatar && (
-                    <img
-                      src={review.client.avatar}
-                      alt={review.client.name}
-                      className="w-6 h-6 rounded-full"
-                    />
-                  )}
-                  <span className="font-medium">{review.client?.name || "Anonymous"}</span>
-                </div>
-                {/* Rating stars */}
-                <div className="flex ml-auto">
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700 mb-1">{review.comment}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(review.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
-    </CardContent>
-  </Card>
-</TabsContent>
-
-              {/* <TabsContent value="reviews">
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-xl mb-4">
-                      Reviews ({artisanReviews.length})
-                    </h3>
-                    <div className="space-y-6">
-                      {artisanReviews.map((review) => (
-                        <div key={review.id} className="border-b pb-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <p>{review.clientName}</p>
-                            <div className="flex">
-                              {Array.from({ length: review.rating }).map(
-                                (_, i) => (
+                    <h3 className="text-xl mb-4">Reviews ({reviews.length})</h3>
+                    {loadingReviews ? (
+                      <p>Loading reviews...</p>
+                    ) : reviews.length === 0 ? (
+                      <p className="text-gray-500">No reviews yet.</p>
+                    ) : (
+                      // <div className="space-y-6">
+                      //   {reviews.map((review) => (
+                      //     <div key={review._id} className="border-b pb-4 last:border-0">
+                      //       <div className="flex items-center gap-2 mb-2">
+                      //         {/* Client avatar/name */}
+                      //         <div className="flex items-center gap-2">
+                      //           {review.client?.avatar && (
+                      //             <img
+                      //               src={review.client.avatar}
+                      //               alt={review.client.name}
+                      //               className="w-6 h-6 rounded-full"
+                      //             />
+                      //           )}
+                      //           <span className="font-medium">{review.client?.name || "Anonymous"}</span>
+                      //         </div>
+                      //         {/* Rating stars */}
+                      //         <div className="flex ml-auto">
+                      //           {Array.from({ length: review.rating }).map((_, i) => (
+                      //             <Star
+                      //               key={i}
+                      //               className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      //             />
+                      //           ))}
+                      //         </div>
+                      //       </div>
+                      //       <p className="text-gray-700 mb-1">{review.comment}</p>
+                      //       <p className="text-sm text-gray-500">
+                      //         {new Date(review.createdAt).toLocaleDateString()}
+                      //       </p>
+                      //     </div>
+
+                      //   ))}
+                      // </div>
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {reviews.map((review) => (
+                          <div
+                            key={review._id}
+                            className="group relative bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-semibold text-sm">
+                                  {review.client?.name?.charAt(0) || "U"}
+                                </div>
+                                <div>
+                                  <h4 className="font-medium text-slate-900 leading-none">
+                                    {review.client?.name}
+                                  </h4>
+                                  <p className="text-[11px] text-slate-400 mt-1 uppercase tracking-wider font-medium">
+                                    {new Date(
+                                      review.createdAt,
+                                    ).toLocaleDateString(undefined, {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex bg-slate-50 px-2 py-1 rounded-lg">
+                                {Array.from({ length: 5 }).map((_, i) => (
                                   <Star
                                     key={i}
-                                    className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                                    className={`w-3.5 h-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
                                   />
-                                ),
-                              )}
+                                ))}
+                              </div>
+                            </div>
+
+                            <p className="text-slate-600 text-sm leading-relaxed italic">
+                              "{review.comment}"
+                            </p>
+
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-10 transition-opacity">
+                              <Quote className="w-8 h-8 text-indigo-600" />
                             </div>
                           </div>
-                          <p className="text-gray-700 mb-1">{review.comment}</p>
-                          <p className="text-sm text-gray-500">{review.date}</p>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              </TabsContent> */}
+              </TabsContent>
             </Tabs>
           </div>
 

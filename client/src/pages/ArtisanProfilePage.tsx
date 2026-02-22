@@ -15,11 +15,10 @@ import { reviewsAPI, usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
 import type { Artisan } from "@/context/AppContext";
 
-
-
 export const ArtisanProfilePage = () => {
   const { id } = useParams();
   const [artisan, setArtisan] = useState<Artisan | null>(null);
+  const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
 
@@ -29,6 +28,8 @@ export const ArtisanProfilePage = () => {
       setArtisan(response.data.artisan);
     } catch (error) {
       console.error("Error fetching artisan:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,15 +48,31 @@ export const ArtisanProfilePage = () => {
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
       getArtisan(id);
       fetchReviews(id);
     }
   }, [id]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading artisan profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!artisan) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Artisan not found
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-2">Artisan not found</h2>
+          <p className="text-gray-600 mb-4">The artisan you're looking for doesn't exist or has been removed.</p>
+          <Link to="/" className="text-blue-600 hover:underline">Return to home</Link>
+        </div>
       </div>
     );
   }
@@ -84,7 +101,7 @@ export const ArtisanProfilePage = () => {
                       <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       <span className="text-xl">{artisan.rating}</span>
                     </div>
-                    <span className="text-gray-600">
+                    <span className="text-gray-600 text-sm">
                       ({artisan.reviewCount} reviews)
                     </span>
                     {artisan.verified && (
@@ -114,7 +131,6 @@ export const ArtisanProfilePage = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-5xl mx-auto p-8">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -190,39 +206,6 @@ export const ArtisanProfilePage = () => {
                     ) : reviews.length === 0 ? (
                       <p className="text-gray-500">No reviews yet.</p>
                     ) : (
-                      // <div className="space-y-6">
-                      //   {reviews.map((review) => (
-                      //     <div key={review._id} className="border-b pb-4 last:border-0">
-                      //       <div className="flex items-center gap-2 mb-2">
-                      //         {/* Client avatar/name */}
-                      //         <div className="flex items-center gap-2">
-                      //           {review.client?.avatar && (
-                      //             <img
-                      //               src={review.client.avatar}
-                      //               alt={review.client.name}
-                      //               className="w-6 h-6 rounded-full"
-                      //             />
-                      //           )}
-                      //           <span className="font-medium">{review.client?.name || "Anonymous"}</span>
-                      //         </div>
-                      //         {/* Rating stars */}
-                      //         <div className="flex ml-auto">
-                      //           {Array.from({ length: review.rating }).map((_, i) => (
-                      //             <Star
-                      //               key={i}
-                      //               className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      //             />
-                      //           ))}
-                      //         </div>
-                      //       </div>
-                      //       <p className="text-gray-700 mb-1">{review.comment}</p>
-                      //       <p className="text-sm text-gray-500">
-                      //         {new Date(review.createdAt).toLocaleDateString()}
-                      //       </p>
-                      //     </div>
-
-                      //   ))}
-                      // </div>
                       <div className="grid gap-6 md:grid-cols-2">
                         {reviews.map((review) => (
                           <div

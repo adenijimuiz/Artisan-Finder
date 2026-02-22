@@ -23,6 +23,7 @@ const BookingDetailPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useApp();
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchBooking = async (bookingId: string) => {
     try {
@@ -38,14 +39,28 @@ const BookingDetailPage = () => {
       }
     } catch (error) {
       console.error("Error fetching booking details:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (id) {
+      setLoading(true);
       fetchBooking(id);
     }
   }, [id]);
+
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading booking details...</p>
+          </div>
+        </div>
+      );
+    }
 
   if (!booking) {
     return (
@@ -83,25 +98,6 @@ const BookingDetailPage = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
-  // const getActivityColor = (status: string) => {
-  //   switch (status) {
-  //     case "pending":
-  //       return "bg-yellow-100";
-  //     case "accepted":
-  //       return "bg-green-200";
-  //     case "completed":
-  //       return "bg-emerald-950";
-  //     case "cancelled":
-  //       return "bg-red-500";
-  //     case "rejected":
-  //       return "bg-red-500";
-  //     case "in-progress":
-  //       return "bg-purple-100";
-  //     default:
-  //       return "bg-gray-100 text-gray-800";
-  //   }
-  // };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -164,7 +160,7 @@ const BookingDetailPage = () => {
 
   const startBooking = async () => {
     try {
-      const response = await bookingsAPI.inProgressBooking(booking._id); // Assumes this endpoint exists
+      const response = await bookingsAPI.inProgressBooking(booking._id);
       if (response.data.success) {
         setBooking(response.data.booking);
       } else {

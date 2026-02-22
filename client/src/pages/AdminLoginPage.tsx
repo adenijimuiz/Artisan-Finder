@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { adminAPI } from '@/services/api';
 // import { useApp } from '@/context/AppContext';
 
 export const AdminLoginPage = () => {
@@ -11,22 +12,20 @@ export const AdminLoginPage = () => {
   // const { setCurrentUser } = useApp();
 
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    phone: '',
-    // location: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const newUser = {
-    //   id: `client-${Date.now()}`,
-    //   ...formData,
-    //   role: 'client' as const
-    // };
-    // setCurrentUser(newUser);
-    navigate('/dashboard/admin');
+    try {
+      // Simulate API call
+      const response = await adminAPI.login(formData.email, formData.password);
+      localStorage.setItem('adminToken', response.data.token);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (

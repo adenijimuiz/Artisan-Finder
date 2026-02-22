@@ -12,6 +12,7 @@ import authRouter from './routes/authRouter.js';
 import userRouter from './routes/userRouter.js';
 import bookingRouter from './routes/bookingRouter.js';
 import reviewRouter from './routes/reviewRouter.js';
+import adminRouter from './routes/adminRouter.js';
 
 
 
@@ -64,6 +65,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/bookings', bookingRouter)
 app.use('/api/reviews', reviewRouter);
+
+
+app.use('/api/admin', adminRouter)
 
 // app.use('/api/messages', messageRoutes);
 // app.use('/api/payments', paymentRoutes);

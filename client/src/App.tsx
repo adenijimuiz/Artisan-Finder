@@ -163,18 +163,18 @@ function AppContent() {
             path="/dashboard/artisan"
             element={
               <ProtectedRoute requiredRole="artisan">
-                <ArtisanDashboard /> //✅✅✅
+                <ArtisanDashboard />
               </ProtectedRoute>
             }
-          />
+          /> //✅✅✅
           <Route
             path="/dashboard/client"
             element={
               <ProtectedRoute requiredRole="client">
-                <ClientDashboard /> //✅✅✅
+                <ClientDashboard />
               </ProtectedRoute>
             }
-          />
+          /> //✅✅✅
           <Route
             path="/messages"
             element={

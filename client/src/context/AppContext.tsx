@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState,  type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export interface User {
@@ -137,11 +137,11 @@ export interface Message {
 
 interface AppContextType {
   currentUser: User | null;
-  users: User[];
+  // users: User[];
   setBookings: (bookings: Booking[]) => void;
   bookings: Booking[];
-  setArtisans: (artisans: User) => void;
-  artisans: User[]
+  setArtisans: (artisans: Artisan[]) => void;
+  artisans: Artisan[];
   reviews: Review[];
   messages: Message[];
   navigate: (path: string) => void;
@@ -223,7 +223,7 @@ const mockMessages: Message[] = [
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [artisans, setArtisans] = useState([]);
+  const [artisans, setArtisans] = useState<Artisan[] | []>([]);
   // const [users] = useState<User[]>([...mockArtisans]);
   const [bookings, setBookings] = useState<Booking[] | []>([]);
   const [reviews, setReviews] = useState<Review[]>(mockReviews);

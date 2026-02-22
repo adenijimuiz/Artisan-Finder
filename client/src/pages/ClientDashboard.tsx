@@ -27,7 +27,7 @@ export const ClientDashboard = () => {
     currentUser,
     setBookings,
     bookings,
-    getFavoriteArtisans,
+    // getFavoriteArtisans,
     navigate,
   } = useApp();
 

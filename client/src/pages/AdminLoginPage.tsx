@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { adminAPI } from '@/services/api';
-// import { useApp } from '@/context/AppContext';
+import { useApp } from '@/context/AppContext';
 
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
-  // const { setCurrentUser } = useApp();
+  const { setCurrentUser } = useApp();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -21,8 +21,11 @@ export const AdminLoginPage = () => {
     try {
       // Simulate API call
       const response = await adminAPI.login(formData.email, formData.password);
-      localStorage.setItem('adminToken', response.data.token);
-      navigate('/admin');
+      console.log('Login successful:', response.data.admin);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.admin));
+      setCurrentUser(response.data.admin);
+      navigate('/dashboard/admin');
     } catch (error) {
       console.error('Login failed:', error);
     }

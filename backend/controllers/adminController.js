@@ -7,7 +7,7 @@ export const adminLogin = async (req, res) => {
 
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
       const token = jwt.sign({email, role:'admin'}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRE});
-      res.json({success: true, token})
+      res.json({success: true, token, admin: {email, name: 'Admin', role:'admin'}});
     }else{
       res.json({success: false, message: 'Invalid Credentials'})
     }

@@ -1,13 +1,13 @@
 import { useApp, type Booking } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Heart,
   Calendar,
   Star,
-  CreditCard,
+  // CreditCard,
   AlertCircle,
   CheckCircle,
   XCircle,
@@ -16,7 +16,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Rating } from "@/components/ui/rating";
+// import { Rating } from "@/components/ui/rating";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { bookingsAPI, reviewsAPI } from "@/services/api";
@@ -27,7 +27,6 @@ export const ClientDashboard = () => {
     currentUser,
     setBookings,
     bookings,
-    users,
     getFavoriteArtisans,
     navigate,
   } = useApp();
@@ -140,7 +139,7 @@ const submitReview = async () => {
     console.log(bookings);
   }, []);
 
-  const favoriteIds = getFavoriteArtisans();
+  // const favoriteIds = getFavoriteArtisans();
   // const favoriteArtisans = users.filter(u => favoriteIds.includes(u._id));
 
   return (

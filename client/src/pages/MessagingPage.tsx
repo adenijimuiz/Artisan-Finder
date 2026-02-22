@@ -15,21 +15,21 @@ export const MessagingPage = () => {
   const conversationPartners = Array.from(
     new Set(
       messages
-        .filter(m => m.senderId === currentUser?.id || m.receiverId === currentUser?.id)
-        .map(m => m.senderId === currentUser?.id ? m.receiverId : m.senderId)
+        .filter(m => m.senderId === currentUser?._id || m.receiverId === currentUser?._id)
+        .map(m => m.senderId === currentUser?._id ? m.receiverId : m.senderId)
     )
-  ).map(id => users.find(u => u.id === id)).filter(Boolean);
+  ).map(id => users.find(u => u._id === id)).filter(Boolean);
 
   // Get messages for selected conversation
   const conversationMessages = selectedUserId
     ? messages.filter(
         m =>
-          (m.senderId === currentUser?.id && m.receiverId === selectedUserId) ||
-          (m.senderId === selectedUserId && m.receiverId === currentUser?.id)
+          (m.senderId === currentUser?._id && m.receiverId === selectedUserId) ||
+          (m.senderId === selectedUserId && m.receiverId === currentUser?._id)
       ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     : [];
 
-  const selectedUser = users.find(u => u.id === selectedUserId);
+  const selectedUser = users.find(u => u._id === selectedUserId);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export const MessagingPage = () => {
 
     const message = {
       id: `msg-${Date.now()}`,
-      senderId: currentUser.id,
+      senderId: currentUser._id,
       receiverId: selectedUserId,
       content: newMessage,
       timestamp: new Date().toISOString(),
@@ -70,15 +70,15 @@ export const MessagingPage = () => {
               {conversationPartners.map(partner => {
                 if (!partner) return null;
                 const unread = messages.filter(
-                  m => m.senderId === partner.id && m.receiverId === currentUser?.id && !m.read
+                  m => m.senderId === partner._id && m.receiverId === currentUser?._id && !m.read
                 ).length;
 
                 return (
                   <div
-                    key={partner.id}
-                    onClick={() => setSelectedUserId(partner.id)}
+                    key={partner._id}
+                    onClick={() => setSelectedUserId(partner._id)}
                     className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${
-                      selectedUserId === partner.id ? 'bg-blue-50' : ''
+                      selectedUserId === partner._id ? 'bg-blue-50' : ''
                     }`}
                   >
                     <div className="flex gap-3">
@@ -129,7 +129,7 @@ export const MessagingPage = () => {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {conversationMessages.map(msg => {
-                    const isMe = msg.senderId === currentUser?.id;
+                    const isMe = msg.senderId === currentUser?._id;
                     return (
                       <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                         <div

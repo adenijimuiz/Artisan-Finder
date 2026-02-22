@@ -2,14 +2,14 @@ import { useApp } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import {
-  DollarSign,
+  // DollarSign,
   Star,
   Calendar,
   MessageSquare,
   User,
-  Image,
+  // Image,
   Loader2,
   Plus,
   Verified,
@@ -26,13 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 export const ArtisanDashboard = () => {
-  const {
-    setCurrentUser,
-    currentUser,
-    bookings,
-    setBookings,
-    navigate,
-  } = useApp();
+  const { setCurrentUser, currentUser, bookings, setBookings, navigate } =
+    useApp();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
@@ -76,7 +71,7 @@ export const ArtisanDashboard = () => {
       toast.error("Error fetching reviews");
       console.log("Error fetching reviews", error);
     }
-  }
+  };
 
   useEffect(() => {
     getBooking();
@@ -85,8 +80,6 @@ export const ArtisanDashboard = () => {
     }
     // fetchUpdatedUser()
   }, []);
-
-
 
   const fetchUpdatedUser = async () => {
     try {
@@ -646,44 +639,52 @@ export const ArtisanDashboard = () => {
                   ))}
                 </div> */}
                 <div className="grid gap-6 md:grid-cols-2">
-  {reviews.map((review) => (
-    <div 
-      key={review._id} 
-      className="group relative bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
-    >
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-semibold text-sm">
-            {review.client?.name?.charAt(0) || 'U'}
-          </div>
-          <div>
-            <h4 className="font-medium text-slate-900 leading-none">{review.client?.name}</h4>
-            <p className="text-[11px] text-slate-400 mt-1 uppercase tracking-wider font-medium">
-              {new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-            </p>
-          </div>
-        </div>
-        <div className="flex bg-slate-50 px-2 py-1 rounded-lg">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star 
-              key={i} 
-              className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} 
-            />
-          ))}
-        </div>
-      </div>
-      
-      <p className="text-slate-600 text-sm leading-relaxed italic">
-        "{review.comment}"
-      </p>
-      
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-10 transition-opacity">
-        <Quote className="w-8 h-8 text-indigo-600" />
-      </div>
-    </div>
-  ))}
-</div>
+                  {reviews.map((review) => (
+                    <div
+                      key={review._id}
+                      className="group relative bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-semibold text-sm">
+                            {review.client?.name?.charAt(0) || "U"}
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-slate-900 leading-none">
+                              {review.client?.name}
+                            </h4>
+                            <p className="text-[11px] text-slate-400 mt-1 uppercase tracking-wider font-medium">
+                              {new Date(review.createdAt).toLocaleDateString(
+                                undefined,
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex bg-slate-50 px-2 py-1 rounded-lg">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3.5 h-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
 
+                      <p className="text-slate-600 text-sm leading-relaxed italic">
+                        "{review.comment}"
+                      </p>
+
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-10 transition-opacity">
+                        <Quote className="w-8 h-8 text-indigo-600" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

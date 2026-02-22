@@ -15,24 +15,7 @@ import { reviewsAPI, usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
 import type { Artisan } from "@/context/AppContext";
 
-// export interface Artisan {
-//   _id: string;
-//   name: string;
-//   email: string;
-//   role: "artisan";
-//   phone?: string;
-//   avatar?: string;
-//   bio?: string;
-//   skills?: string[];
-//   experience?: string;
-//   location?: string;
-//   rating?: number;
-//   reviewCount?: number;
-//   priceRange?: string;
-//   availability?: string;
-//   portfolio?: string[];
-//   verified?: boolean;
-// }
+
 
 export const ArtisanProfilePage = () => {
   const { id } = useParams();

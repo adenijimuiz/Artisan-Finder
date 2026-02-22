@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { HomePage } from '@/pages/HomePage';
@@ -16,7 +16,7 @@ import { LogOut } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AdminLoginPage } from '@/pages/AdminLoginPage';
 import NotFound from '@/pages/NotFound';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BookingDetailPage from '@/pages/BookingDetailPage';
 

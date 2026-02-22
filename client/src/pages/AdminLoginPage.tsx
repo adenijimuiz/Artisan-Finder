@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useApp } from '@/context/AppContext';
+// import { useApp } from '@/context/AppContext';
 
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
-  const { setCurrentUser } = useApp();
+  // const { setCurrentUser } = useApp();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -20,13 +20,13 @@ export const AdminLoginPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newUser = {
-      id: `client-${Date.now()}`,
-      ...formData,
-      role: 'client' as const
-    };
-    setCurrentUser(newUser);
-    navigate('/dashboard/client');
+    // const newUser = {
+    //   id: `client-${Date.now()}`,
+    //   ...formData,
+    //   role: 'client' as const
+    // };
+    // setCurrentUser(newUser);
+    navigate('/dashboard/admin');
   };
 
   return (

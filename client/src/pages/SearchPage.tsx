@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import { usersAPI } from "@/services/api";
 
 export const SearchPage = () => {
-  const { users, toggleFavorite, getFavoriteArtisans, artisans, setArtisans } =
+  const { toggleFavorite, getFavoriteArtisans, artisans, setArtisans } =
     useApp();
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");

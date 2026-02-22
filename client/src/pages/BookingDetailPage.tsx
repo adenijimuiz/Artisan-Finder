@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 const BookingDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useApp(); // Removed unused users and updateBooking
+  const { currentUser } = useApp();
   const [booking, setBooking] = useState<Booking | null>(null);
 
   const fetchBooking = async (bookingId: string) => {

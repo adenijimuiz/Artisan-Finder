@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Calendar, Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import { bookingsAPI } from "@/services/api";
 // import { bookingsAPI } from '@/api/bookings'; // adjust path
 
 export const BookingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser, addBooking } = useApp();
+  // const { currentUser, addBooking } = useApp();
 
   const [formData, setFormData] = useState({
     artisanId: id,

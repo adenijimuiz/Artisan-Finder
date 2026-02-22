@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, FileCheck, AlertCircle, TrendingUp } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { users, bookings, reviews } = useApp();
+  const { users, bookings } = useApp();
 
   const artisans = users.filter(u => u.role === 'artisan');
   const clients = users.filter(u => u.role === 'client');
@@ -80,7 +80,7 @@ export const AdminDashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {users.map(user => (
-                    <div key={user.id} className="border rounded-lg p-4">
+                    <div key={user._id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
@@ -116,7 +116,7 @@ export const AdminDashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {pendingVerification.map(artisan => (
-                    <div key={artisan.id} className="border rounded-lg p-4">
+                    <div key={artisan._id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="mb-1">{artisan.name}</h3>
@@ -207,7 +207,7 @@ export const AdminDashboard = () => {
                       .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                       .slice(0, 5)
                       .map(artisan => (
-                        <div key={artisan.id} className="flex justify-between items-center">
+                        <div key={artisan._id} className="flex justify-between items-center">
                           <span>{artisan.name}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-yellow-500">★</span>

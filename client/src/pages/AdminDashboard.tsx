@@ -7,18 +7,24 @@ import { Users, FileCheck, AlertCircle, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { adminAPI } from '../services/api';
 
+interface StatusHistoryItem {
+  status: 'pending' | 'completed' | 'cancelled' | 'accepted' | 'rejected';
+  [key: string]: any;
+}
+
 export const AdminDashboard = () => {
-  const { bookings } = useApp();
+  const { navigate } = useApp();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryItem[]>([]);
 
   // Derived data from users
   const artisans = users.filter(u => u.role === 'artisan');
   const clients = users.filter(u => u.role === 'client');
   const pendingVerification = artisans.filter(a => !a.verified);
 
-  const getUsers = async () => {
+  const getAllUsers = async () => {
     try {
       setLoading(true);
       const response = await adminAPI.getAllUsers();
@@ -35,8 +41,35 @@ export const AdminDashboard = () => {
     }
   };
 
+  const getstatusHistory = async () => {
+    try {
+      const response = await adminAPI.getBookingHistory();
+      if (response.data.success) {
+        setStatusHistory(response.data.statusHistory);
+      }
+    } catch (error) {
+      console.error(error);
+      setError('Failed to fetch booking history');
+    }
+  }
+
+    // Compute category counts from bookings
+  const categoryCounts = statusHistory.reduce((acc, booking) => {
+    const serviceType = booking.serviceType?.trim();
+    if (serviceType) {
+      acc[serviceType] = (acc[serviceType] || 0) + 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Sort categories by count descending
+  const sortedCategories = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1]);
+  const maxCount = sortedCategories.length > 0 ? sortedCategories[0][1] : 0;
+
   useEffect(() => {
-    getUsers();
+    getAllUsers();
+    getstatusHistory();
   }, []);
 
   if (loading) {
@@ -101,7 +134,7 @@ export const AdminDashboard = () => {
                 <p className="text-sm text-gray-600">Total Bookings</p>
                 <TrendingUp className="w-5 h-5 text-green-600" />
               </div>
-              <p className="text-3xl">{bookings.length}</p>
+              <p className="text-3xl">{statusHistory.length}</p>
             </CardContent>
           </Card>
         </div>
@@ -141,9 +174,11 @@ export const AdminDashboard = () => {
                           )}
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline">View</Button>
-                          <Button size="sm" variant="outline">Edit</Button>
-                          <Button size="sm" variant="outline">Suspend</Button>
+                          {
+                            user.role === 'artisan' && <Button size="sm" variant="outline" onClick={() => navigate(`artisan/${user._id}`)}>View</Button>
+                          }
+                          
+                          <Button size="sm" variant="outline">Delete</Button>
                         </div>
                       </div>
                     </div>
@@ -232,15 +267,23 @@ export const AdminDashboard = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between">
                       <span>Pending</span>
-                      <span>{bookings.filter(b => b.status === 'pending').length}</span>
+                      <span>{statusHistory.filter(b => b.status === 'pending').length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Accepted</span>
+                      <span>{statusHistory.filter(b => b.status === 'accepted').length}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Completed</span>
-                      <span>{bookings.filter(b => b.status === 'completed').length}</span>
+                      <span>{statusHistory.filter(b => b.status === 'completed').length}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Cancelled</span>
-                      <span>{bookings.filter(b => b.status === 'cancelled').length}</span>
+                      <span>{statusHistory.filter(b => b.status === 'cancelled').length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Rejected</span>
+                      <span>{statusHistory.filter(b => b.status === 'rejected').length}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -273,9 +316,31 @@ export const AdminDashboard = () => {
                   <CardTitle>Popular Categories</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 flex items-center justify-center text-gray-500">
+                  {/* <div className="h-64 flex items-center justify-center text-gray-500">
                     Chart: Popular service categories
-                  </div>
+                  </div> */}
+                  {sortedCategories.length === 0 ? (
+                    <div className="h-64 flex items-center justify-center text-gray-500">
+                      No booking data available
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {sortedCategories.map(([category, count]) => (
+                        <div key={category} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span className="capitalize">{category}</span>
+                            <span>{count} booking{count !== 1 ? 's' : ''}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{ width: `${(count / maxCount) * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

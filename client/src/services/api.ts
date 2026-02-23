@@ -187,6 +187,8 @@ export const adminAPI = {
 
   getAllBookings: () => api.get('/admin/bookings'),
 
+  getBookingHistory: () => api.get('/admin/booking-history'),
+
   verifyArtisan: (id: string) => api.put(`/admin/verify-artisan/${id}`),
 
   deleteUser: (id: string) => api.delete(`/admin/users/${id}`),

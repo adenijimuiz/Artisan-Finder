@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Booking from '../models/Booking.js';
 
 export const adminLogin = async (req, res) => {
   try {
@@ -20,7 +21,47 @@ export const adminLogin = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('-portfolio').sort('-createdAt');
-    res.json({ success: true, count: users.length, users });
+    res.json({ success: true, users });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate('artisan', 'name email')
+      .populate('client', 'name email')
+      .sort('-createdAt');
+    res.json({ success: true, bookings });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const statusHistory = async (req, res) => {
+  try {
+    const statusHistory = await Booking.find().select('status serviceType').sort().lean()
+
+    res.json({success: true, statusHistory})
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+export const verifyArtisan = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { verified: true },
+      { new: true }
+    );
+
+    if (!user || user.role !== 'artisan') {
+      return res.status(404).json({ message: 'Artisan not found' });
+    }
+
+    res.json({ success: true, user });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

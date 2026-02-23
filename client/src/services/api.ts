@@ -181,8 +181,8 @@ export const paymentsAPI = {
 
 // Admin API
 export const adminAPI = {
-  login: (email: string, password: string) => api.post('/admin/login-admin', { email, password }),
-  
+  login: (email: string, password: string) => api.post('/admin/login', { email, password }),
+
   getAllUsers: () => api.get('/admin/users'),
 
   getAllBookings: () => api.get('/admin/bookings'),

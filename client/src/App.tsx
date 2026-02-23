@@ -41,7 +41,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <Link to="/search" className="hover:text-blue-600">Find Artisans</Link>
               <Link to="/messages" className="hover:text-blue-600">Messages</Link>
               {currentUser?.role === 'admin' && (
-                <Link to="/admin" className="hover:text-blue-600">Admin</Link>
+                <Link to="/dashboard/admin" className="hover:text-blue-600">Admin</Link>
               )}
             </div>
 

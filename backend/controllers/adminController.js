@@ -19,7 +19,7 @@ export const adminLogin = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().sort('-createdAt');
+    const users = await User.find().select('-portfolio').sort('-createdAt');
     res.json({ success: true, count: users.length, users });
   } catch (error) {
     res.status(400).json({ message: error.message });

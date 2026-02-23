@@ -101,7 +101,8 @@ const userSchema = new mongoose.Schema({
 });
 
 // Index for geospatial queries
-userSchema.index({ 'location.coordinates': '2dsphere' });
+// userSchema.index({ 'location.coordinates': '2dsphere' });
+userSchema.index({ role: 1, createdAt: -1 }); // Index for role and creation date to optimize artisan queries
 
 // Hash password before saving
 userSchema.pre('save', async function () {

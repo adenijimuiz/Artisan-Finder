@@ -27,13 +27,36 @@ export const protect = async (req, res, next) => {
   }
 };
 
-export const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: `User role ${req.user.role} is not authorized to access this route`
-      });
+export const adminAuth = async (req, res, next) => {
+  try {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
     }
-    next();
-  };
-};
+
+    if (!token) {
+      return res.json({success: false, message: 'Not Authorized'})
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    if (decoded.email !== process.env.ADMIN_EMAIL || decoded.role !== 'admin') {
+      return res.json({success: false, message: 'Not Authorized'})
+    }
+    req.user = decoded;
+    next()
+  } catch (error) {
+    console.log(error)
+    res.json({success: false, message: error.message })
+  }
+}
+
+// export const authorize = (...roles) => {
+//   return (req, res, next) => {
+//     if (!roles.includes(req.user.role)) {
+//       return res.status(403).json({
+//         message: `User role ${req.user.role} is not authorized to access this route`
+//       });
+//     }
+//     next();
+//   };
+// };

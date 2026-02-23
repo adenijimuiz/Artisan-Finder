@@ -49,7 +49,7 @@ export const getArtisans = async (req, res) => {
     //   artisans.sort((a, b) => b.reviewCount - a.reviewCount);
     // }
 
-    const artisans = await User.find({role: 'artisan'})
+    const artisans = await User.find({role: 'artisan'}).sort('-createdAt').select('-portfolio').lean();
 
     res.json({ success: true,  artisans });
   } catch (error) {

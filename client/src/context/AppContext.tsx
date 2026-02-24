@@ -45,6 +45,10 @@ export interface Artisan {
   createdAt: string;
   updatedAt: string;
   location: string;
+  businessName: string;
+  nin: string;
+  nextOfKinName: string;
+  nextOfKinAddress: string;
 }
 
 export interface Client {

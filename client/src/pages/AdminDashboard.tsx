@@ -6,11 +6,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, FileCheck, AlertCircle, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { adminAPI } from '../services/api';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+// import { ChartConfig } from '@/components/ui/chart';
 
 interface StatusHistoryItem {
   status: 'pending' | 'completed' | 'cancelled' | 'accepted' | 'rejected';
   [key: string]: any;
 }
+
+const chartConfig = {
+  bookings: {
+    label: "Number of Bookings",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig
 
 export const AdminDashboard = () => {
   const { navigate } = useApp();
@@ -53,19 +68,41 @@ export const AdminDashboard = () => {
     }
   }
 
-    // Compute category counts from bookings
-  const categoryCounts = statusHistory.reduce((acc, booking) => {
-    const serviceType = booking.serviceType?.trim();
-    if (serviceType) {
-      acc[serviceType] = (acc[serviceType] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
+  // 1. Calculate category counts from the bookings data (statusHistory)
+const categoryData = (statusHistory || []).reduce((acc, booking) => {
+  const serviceType = booking.serviceType?.trim(); // Clean up the service type string
+  if (serviceType) {
+    // If we've seen this category before, increment its count
+    acc[serviceType] = (acc[serviceType] || 0) + 1;
+  }
+  return acc;
+}, {} as Record<string, number>);
 
-  // Sort categories by count descending
-  const sortedCategories = Object.entries(categoryCounts)
-    .sort((a, b) => b[1] - a[1]);
-  const maxCount = sortedCategories.length > 0 ? sortedCategories[0][1] : 0;
+// 2. Transform the counts into an array of objects for the chart
+const chartData = Object.entries(categoryData).map(([category, count]) => ({
+  category: category.charAt(0).toUpperCase() + category.slice(1), // Capitalize
+  bookings: count,
+}));
+
+  const deleteUser = async (id: string) => {
+    try {
+      await adminAPI.deleteUser(id);
+      getAllUsers();
+    } catch (error) {
+      console.error(error);
+      setError('Failed to delete user');
+    }
+  }
+
+  const verifyArtisan = async (id: string) => {
+    try {
+      await adminAPI.verifyArtisan(id);
+      getAllUsers();
+    } catch (error) {
+      console.error(error);
+      setError('Failed to verify artisan');
+    }
+  }
 
   useEffect(() => {
     getAllUsers();
@@ -178,7 +215,7 @@ export const AdminDashboard = () => {
                             user.role === 'artisan' && <Button size="sm" variant="outline" onClick={() => navigate(`artisan/${user._id}`)}>View</Button>
                           }
                           
-                          <Button size="sm" variant="outline">Delete</Button>
+                          <Button size="sm" variant="outline" onClick={() => deleteUser(user._id)}>Delete</Button>
                         </div>
                       </div>
                     </div>
@@ -209,18 +246,19 @@ export const AdminDashboard = () => {
                           </p>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm">Approve</Button>
-                          <Button size="sm" variant="outline">Reject</Button>
+                          
                           <Button size="sm" variant="outline">Request More Info</Button>
                         </div>
                       </div>
                       <div className="mt-4 grid grid-cols-2 gap-2">
-                        <div className="border p-2 rounded text-center text-sm">
+                        {/* <div className="border p-2 rounded text-center text-sm">
                           📄 ID Document
                         </div>
                         <div className="border p-2 rounded text-center text-sm">
                           🎓 Certifications
-                        </div>
+                        </div> */}
+                        <Button size="lg" onClick={() => verifyArtisan(artisan._id)}>Approve</Button>
+                          <Button size="lg" variant="outline">Reject</Button>
                       </div>
                     </div>
                   ))}
@@ -316,31 +354,33 @@ export const AdminDashboard = () => {
                   <CardTitle>Popular Categories</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* <div className="h-64 flex items-center justify-center text-gray-500">
-                    Chart: Popular service categories
-                  </div> */}
-                  {sortedCategories.length === 0 ? (
-                    <div className="h-64 flex items-center justify-center text-gray-500">
-                      No booking data available
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {sortedCategories.map(([category, count]) => (
-                        <div key={category} className="space-y-1">
-                          <div className="flex justify-between text-sm">
-                            <span className="capitalize">{category}</span>
-                            <span>{count} booking{count !== 1 ? 's' : ''}</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                              className="bg-blue-600 h-2.5 rounded-full"
-                              style={{ width: `${(count / maxCount) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+
+                   {chartData.length > 0 ? (
+      <>
+        
+        <ChartContainer config={chartConfig} className="min-h-50 w-full">
+          <BarChart accessibilityLayer data={chartData}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => value.slice(0, 10)} // Truncate long names
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="dashed" />}
+            />
+            <Bar dataKey="bookings" fill="var(--color-bookings)" radius={4} />
+          </BarChart>
+        </ChartContainer>
+      </>
+    ) : (
+      <div className="h-64 flex items-center justify-center text-gray-500">
+        No booking data available
+      </div>
+    )}
                 </CardContent>
               </Card>
             </div>

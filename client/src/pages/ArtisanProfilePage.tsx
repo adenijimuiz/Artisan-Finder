@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { reviewsAPI, usersAPI } from "@/services/api";
 import { useEffect, useState } from "react";
-import type { Artisan } from "@/context/AppContext";
+import { useApp, type Artisan } from "@/context/AppContext";
 
 export const ArtisanProfilePage = () => {
   const { id } = useParams();
@@ -21,6 +21,7 @@ export const ArtisanProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const { currentUser } = useApp();
 
   const getArtisan = async (params: string) => {
     try {
@@ -38,7 +39,6 @@ export const ArtisanProfilePage = () => {
       setLoadingReviews(true);
       const response = await reviewsAPI.getArtisanReviews(artisanId);
       setReviews(response.data.reviews);
-      console.log("Fetched reviews:", response.data.reviews);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     } finally {
@@ -280,6 +280,16 @@ export const ArtisanProfilePage = () => {
                   <p>📧 {artisan.email}</p>
                   <p>📞 {artisan.phone}</p>
                   <p>📍 {artisan.location}</p>
+                  {
+                    currentUser?.role === "admin" && (
+                      <>  
+                      <p><span className="font-semibold">Nin:</span>  {artisan?.nin}</p>
+                      <p><span className="font-semibold">Next of Kin Name:</span> {artisan?.nextOfKinName}</p>
+                      <p><span className="font-semibold">Next of Kin: Address</span> {artisan?.nextOfKinAddress}</p>
+                      
+                      </>
+                    )
+                  }
                 </div>
               </CardContent>
             </Card>

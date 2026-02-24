@@ -28,7 +28,8 @@ export const HomePage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white py-20">
+      {/* <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white py-20"> */}
+        <div className=" bg-[url('@/assets/bg.jpg')] bg-cover bg-center bg-no-repeat text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl mb-6">Find Skilled Artisans Near You</h1>

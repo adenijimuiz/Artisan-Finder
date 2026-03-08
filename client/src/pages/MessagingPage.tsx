@@ -36,7 +36,6 @@ interface Message {
 }
 
 
-
 export const MessagingPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

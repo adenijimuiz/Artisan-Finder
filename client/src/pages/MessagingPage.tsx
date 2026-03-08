@@ -35,9 +35,7 @@ interface Message {
   createdAt?: string;
 }
 
-interface MessagingPageProps {
-  currentUser: { _id: string; name: string; avatar?: string } | null;
-}
+
 
 export const MessagingPage = () => {
   const navigate = useNavigate();

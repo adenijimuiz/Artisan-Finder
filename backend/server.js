@@ -13,21 +13,9 @@ import userRouter from './routes/userRouter.js';
 import bookingRouter from './routes/bookingRouter.js';
 import reviewRouter from './routes/reviewRouter.js';
 import adminRouter from './routes/adminRouter.js';
-
-
-
-
-// const connectDB = require('./config/database');
-// const errorHandler = require('./middleware/errorHandler');
-
-// // Import routes
-// const authRoutes = require('./routes/auth');
-// const userRoutes = require('./routes/users');
-// const bookingRoutes = require('./routes/bookings');
-// const reviewRoutes = require('./routes/reviews');
-// const messageRoutes = require('./routes/messages');
-// const paymentRoutes = require('./routes/payments');
-// const adminRoutes = require('./routes/admin');
+import messageRouter from './routes/messageRouter.js';
+import Message from './models/Message.js';
+import jwt from 'jsonwebtoken';
 
 // Initialize express
 const app = express();
@@ -44,8 +32,8 @@ const io = new socketIO(server, {
 // Connect to MongoDB
 connectDB();
 
-//connect to cloudinary
-connectCloudinary()
+// Connect to Cloudinary
+connectCloudinary();
 
 // Middleware
 app.use(helmet());
@@ -63,15 +51,13 @@ app.set('io', io);
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
-app.use('/api/bookings', bookingRouter)
+app.use('/api/bookings', bookingRouter);
 app.use('/api/reviews', reviewRouter);
-
-
-app.use('/api/admin', adminRouter)
+app.use('/api/admin', adminRouter);
+app.use('/api/messages', messageRouter);
 
 // app.use('/api/messages', messageRoutes);
 // app.use('/api/payments', paymentRoutes);
-// app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -79,33 +65,47 @@ app.get('/health', (req, res) => {
 });
 
 // Error handler
-app.use(errorHandler)
+app.use(errorHandler);
 
 // Socket.IO connection handling
 const activeUsers = new Map();
 
+// JWT auth middleware for sockets
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) return next(new Error('Authentication required'));
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return next(new Error('Invalid token'));
+    socket.userId = decoded.id; // ✅ Attach verified user ID to socket
+    next();
+  });
+});
+
+
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
-  // User joins
-  socket.on('join', (userId) => {
+  // ✅ Fix 3: Listen on the string 'join', not socket.userId (a variable value)
+  // The user ID is already on socket.userId from the JWT middleware — no need to trust the client
+  socket.on('join', () => {
+    const userId = socket.userId;
     activeUsers.set(userId, socket.id);
     socket.join(`user_${userId}`);
     console.log(`User ${userId} joined`);
-    
+
     // Notify others that user is online
     io.emit('user_online', { userId });
   });
 
   // Handle new message
   socket.on('send_message', async (data) => {
-    const { senderId, receiverId, content } = data;
-    
-    // Save message to database (implement in messageController)
+    const { receiverId, content } = data;
+
     try {
-      const Message = require('./models/Message');
+      // ✅ Fix 4: Use socket.userId (from verified JWT) instead of trusting client-sent senderId
       const message = await Message.create({
-        sender: senderId,
+        sender: socket.userId,
         receiver: receiverId,
         content,
         timestamp: new Date()
@@ -128,22 +128,21 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Typing indicator
+  // Typing indicators
   socket.on('typing', (data) => {
-    const { userId, receiverId } = data;
-    io.to(`user_${receiverId}`).emit('user_typing', { userId });
+    const { receiverId } = data;
+    io.to(`user_${receiverId}`).emit('user_typing', { userId: socket.userId });
   });
 
   socket.on('stop_typing', (data) => {
-    const { userId, receiverId } = data;
-    io.to(`user_${receiverId}`).emit('user_stop_typing', { userId });
+    const { receiverId } = data;
+    io.to(`user_${receiverId}`).emit('user_stop_typing', { userId: socket.userId });
   });
 
   // Disconnect
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
-    
-    // Find and remove user from active users
+
     for (const [userId, socketId] of activeUsers.entries()) {
       if (socketId === socket.id) {
         activeUsers.delete(userId);
@@ -158,7 +157,6 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  // console.log(`Environment: ${process.env.NODE_ENV}`);
 });
 
 // Handle unhandled promise rejections

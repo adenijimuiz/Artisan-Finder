@@ -1,7 +1,9 @@
+import Message from "../models/Message.js";
+import User from "../models/User.js";
+import mongoose from "mongoose";
+
 export const getConversations = async (req, res) => {
   try {
-    const mongoose = require('mongoose');
-    
     const conversations = await Message.aggregate([
       {
         $match: {
@@ -11,9 +13,7 @@ export const getConversations = async (req, res) => {
           ]
         }
       },
-      {
-        $sort: { timestamp: -1 }
-      },
+      // ✅ Fix 2: Group FIRST, then sort — $sort before $group loses ordering after grouping
       {
         $group: {
           _id: {
@@ -39,6 +39,9 @@ export const getConversations = async (req, res) => {
             }
           }
         }
+      },
+      {
+        $sort: { 'lastMessage.timestamp': -1 } // ✅ Sort after group on the preserved lastMessage
       }
     ]);
 

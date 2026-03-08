@@ -21,7 +21,7 @@ export const ArtisanProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
-  const { currentUser } = useApp();
+  const { currentUser, navigate } = useApp();
 
   const getArtisan = async (params: string) => {
     try {
@@ -53,6 +53,17 @@ export const ArtisanProfilePage = () => {
       fetchReviews(id);
     }
   }, [id]);
+
+  // ✅ Navigate to /messages and pre-open this artisan's conversation
+  const handleMessage = () => {
+    if (!artisan) return;
+    const params = new URLSearchParams({
+      userId: artisan._id,
+      name:   artisan.name,
+      ...(artisan.avatar ? { avatar: artisan.avatar } : {}),
+    });
+    navigate(`/messages?${params.toString()}`);
+  };
 
   if (loading) {
     return (
@@ -266,7 +277,13 @@ export const ArtisanProfilePage = () => {
                 <Link to={`/book/${artisan._id}`}>
                   <Button className="w-full mb-3">Book Service</Button>
                 </Link>
-                <Button variant="outline" className="w-full">
+
+                {/* ✅ Message button — navigates to /messages with artisan pre-selected */}
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleMessage}
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Message
                 </Button>
@@ -280,16 +297,13 @@ export const ArtisanProfilePage = () => {
                   <p>📧 {artisan.email}</p>
                   <p>📞 {artisan.phone}</p>
                   <p>📍 {artisan.location}</p>
-                  {
-                    currentUser?.role === "admin" && (
-                      <>  
-                      <p><span className="font-semibold">Nin:</span>  {artisan?.nin}</p>
+                  {currentUser?.role === "admin" && (
+                    <>
+                      <p><span className="font-semibold">Nin:</span> {artisan?.nin}</p>
                       <p><span className="font-semibold">Next of Kin Name:</span> {artisan?.nextOfKinName}</p>
-                      <p><span className="font-semibold">Next of Kin: Address</span> {artisan?.nextOfKinAddress}</p>
-                      
-                      </>
-                    )
-                  }
+                      <p><span className="font-semibold">Next of Kin Address:</span> {artisan?.nextOfKinAddress}</p>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
